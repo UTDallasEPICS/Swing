@@ -6,7 +6,7 @@ export default function Logo() {
     <div className={styles.logoContainer}>
       <Image
         className={styles.logo}
-        src="/image2vector.svg"
+        src="/swingLogo.svg"
         alt="Swing Logo"
         width={500}
         height={150}
