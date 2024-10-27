@@ -1,19 +1,20 @@
-"use client"; // make this a Client Component (allowing interactivity)
-
-import Logo from '../components/logo'
-import styles from '../login.module.css'
-// import {useState} from 'react'
+"use client"; // Ensure this is a client component
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import styles from '../login.module.css'; // Adjust your CSS import as needed
+import Logo from '../components/logo'; // Your logo component
 
 export default function LoginPage() {
-  // Store user data
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
+  const router = useRouter(); // Initialize the router
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('login pressed!');
-    // Will implement page rerouting here
+    
+    // Implement page rerouting
+    router.push('/'); // SHOULD Redirect to the homepage
   };
 
   return (
