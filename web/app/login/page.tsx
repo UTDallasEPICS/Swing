@@ -1,6 +1,7 @@
 "use client"; 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 import Logo from '../components/logo';
 import styles from '../login.module.css';
 
@@ -15,9 +16,9 @@ export default function LoginPage() {
 
     // Simulate form validation success
     if (email && password) {
-      // Reset the redirect flag
-      localStorage.setItem('hasRedirected', 'false'); // Allow redirect again
-      router.push('/'); // SHOULD Redirect to homepage
+      // Reset the redirect flag in a cookie with a short expiry
+      Cookies.set('hasRedirected', 'false', { expires: 15 / (24 * 60 * 60) }); // Expires in 15 seconds
+      router.push('/homepage'); // Redirect to homepage
     }
   };
 
