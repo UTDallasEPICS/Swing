@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import styles from '../login.module.css';
+import styles from './login.module.css';
 
 export default function LoginPage() {
   const router = useRouter();

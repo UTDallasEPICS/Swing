@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import Cookies from 'js-cookie'; 
 
 import Link from 'next/link';
-import styles from './homepage.module.css'
 
 export default function Home() {
   useEffect(() => {
@@ -19,26 +18,29 @@ export default function Home() {
   }, []);
 
   return (
-    <main className={styles.main}>
-      {/* Imported Logo since it's going to be the same everywhere*/}
-      <div className={styles.videoUploadText}>
-          <h2>Click below to upload your
-              video after you have recorded it</h2>
-      </div>
+    <main className="flex flex-col items-center min-h-screen bg-white">
+    {/* Imported Logo since it's going to be the same everywhere*/}
+    <div className="text-black flex justify-center items-center text-center pt-20 pb-12">
+      <h2 className="text-xl">
+        Click below to upload your video after you have recorded it
+      </h2>
+    </div>
       
-      {/* For the arrow */}
-      <div className={styles.arrowContainer}>
-        <div className={styles.line}></div>
-        <div className={styles.arrow}></div>
+       {/* For the arrow */}
+       <div className="flex flex-col items-center">
+        {/* Line without margin */}
+        <div className="w-0.5 h-[250px] bg-black"></div>
+        {/* Arrow tip without margin */}
+        <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-black"></div>
       </div>
 
       {/* Video Upload Button - redirects to video upload page */}
-      <div className={styles.videoButtonContainer}>
+      <div className="flex flex-col justify-center items-center mt-5">
         <Link href="/homepage">
-        <button className={styles.videoUploadButton}>
-          Go to Video Upload Page
-        </button>
-      </Link>
+          <button className="px-10 py-5 bg-red-600 text-white rounded-lg cursor-pointer text-lg transition duration-300 hover:bg-red-700">
+            Go to Video Upload Page
+          </button>
+        </Link>
       </div>
     </main>
   );
