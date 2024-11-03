@@ -1,24 +1,29 @@
-"use client"; // make this a Client Component (allowing interactivity)
-
-import Logo from '../components/logo'
-import styles from '../login.module.css'
-// import {useState} from 'react'
+"use client"; 
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import styles from './login.module.css';
 
 export default function LoginPage() {
-  // Store user data
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('login pressed!');
-    // Will implement page rerouting here
+
+    // Simulate form validation success
+    if (email && password) {
+      // Reset the redirect flag in a cookie with a short expiry
+      // use a token 
+      Cookies.set('hasRedirected', 'false', { expires: (24 * 60 * 60) }); // Expires in 15 seconds
+      router.push('/'); // Redirect to homepage
+    }
   };
 
   return (
     <div className={styles.main}>
-      <Logo/>
       <form onSubmit={handleSubmit} className={styles.loginFields}>
         <div className={styles.loginText}>
           <h3>Log in to your account</h3>
@@ -29,8 +34,8 @@ export default function LoginPage() {
           type="email"
           id="email"
           name="email"
-          // value={email}
-          // onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="Enter your email"
           className={styles.inputFields}
@@ -41,8 +46,8 @@ export default function LoginPage() {
           type="password"
           id="password"
           name="password"
-          // value={password}
-          // onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
           placeholder="Enter your password"
           className={styles.inputFields}
