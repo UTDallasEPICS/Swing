@@ -39,7 +39,6 @@ export default function LoginPage() {
         <div className={styles.loginText}>
           <h3>Log in to your account</h3>
         </div>
-
         <label htmlFor="email" className="w-full text-left p-1">Email address</label>
         <input
           type="email"
