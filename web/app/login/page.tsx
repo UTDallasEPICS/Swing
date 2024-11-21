@@ -10,8 +10,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const isLoggedIn = true;
     e.preventDefault();
     console.log('login pressed!');
+    // Will implement page rerouting here
+    router.push('/');
+    
+  };
+  return (
+    <div className="flex flex-col items-center p-12 min-h-screen bg-white">
+      <Logo />
+      <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center text-center pt-12 pb-12">
+        
+        <div className="text-black flex justify-center items-center text-center pb-12">
 
     // Simulate form validation success
     if (email && password) {
@@ -28,8 +39,7 @@ export default function LoginPage() {
         <div className={styles.loginText}>
           <h3>Log in to your account</h3>
         </div>
-
-        <label htmlFor="email" className={styles.labelText}>Email address</label>
+        <label htmlFor="email" className="w-full text-left p-1">Email address</label>
         <input
           type="email"
           id="email"
@@ -38,10 +48,10 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="Enter your email"
-          className={styles.inputFields}
+          className="text-black mb-8 p-4 rounded-lg border border-black w-80 shadow-lg"
         />
 
-        <label htmlFor="password" className={styles.labelText}>Password</label>
+        <label htmlFor="password" className="w-full text-left p-1">Password</label>
         <input
           type="password"
           id="password"
@@ -50,10 +60,10 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           required
           placeholder="Enter your password"
-          className={styles.inputFields}
+          className="text-black mb-8 p-4 rounded-lg border border-black w-80 shadow-lg"
         />
 
-        <button type="submit" className={styles.loginButton}>
+        <button type="submit" className="text-black mt-12 p-4 rounded-lg border border-black w-80 shadow-lg bg-red-700">
           Login
         </button>
       </form>
