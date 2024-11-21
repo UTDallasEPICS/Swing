@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-swing-dev-094aa-authRole",
+      "UnauthRoleArn": "arn:aws:iam::156041411541:role/amplify-swing-dev-094aa-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::156041411541:role/amplify-swing-dev-094aa-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-swing-dev-094aa-deployment",
+      "UnauthRoleName": "amplify-swing-dev-094aa-unauthRole",
+      "StackName": "amplify-swing-dev-094aa",
+      "StackId": "arn:aws:cloudformation:us-east-1:156041411541:stack/amplify-swing-dev-094aa/f643c8c0-a7a3-11ef-b935-0affe493d4df",
+      "AmplifyAppId": "dcx43nk28g4c9"
+    },
+    "categories": {
+      "auth": {
+        "swing8b7cd885": {}
+      }
+    }
+  }
+}
