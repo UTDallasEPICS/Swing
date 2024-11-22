@@ -37,7 +37,7 @@ export default function Home() {
 
       {/* Video Upload Button */}
       <div className="flex flex-col justify-center items-center mt-5">
-        <Link href="/homepage">
+        <Link href="/videoUpload">
           <button className="px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 bg-red-600 text-white rounded-lg 
           cursor-pointer text-base sm:text-lg md:text-xl transition duration-300 hover:bg-red-700">
             Go to Video Upload Page
