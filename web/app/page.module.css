@@ -121,6 +121,7 @@
     background: rgba(var(--card-rgb), 0.1);
     border: 1px solid rgba(var(--card-border-rgb), 0.15);
   }
+}
 
 .uploadedFile {
   margin: 5px 0;
