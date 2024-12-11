@@ -1,8 +1,7 @@
 "use client"; 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Cookies from 'js-cookie';
-import Logo from '../components/logo'; 
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,13 +21,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center p-12 min-h-screen bg-white">
-      <Logo />
-      <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center text-center pt-12 pb-12">
-        <div className="text-black flex justify-center items-center text-center pb-12">
-          {/* Form fields (e.g., email, password) */}
-          <h3>Log in to your account</h3>
-          <label htmlFor="email" className="w-full text-left p-1">Email address</label>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+      <div className="w-full max-w-md bg-gray-100 rounded-lg shadow-lg p-8">
+        <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Welcome Back
+        </h3>
+        <form onSubmit={handleSubmit} className="flex flex-col">
+          <label htmlFor="email" className="text-gray-700 font-medium mb-2">
+            Email Address
+          </label>
           <input
             type="email"
             id="email"
@@ -37,9 +38,12 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="Enter your email"
-            className="text-black mb-8 p-4 rounded-lg border border-black w-80 shadow-lg"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
           />
-          <label htmlFor="password" className="w-full text-left p-1">Password</label>
+
+          <label htmlFor="password" className="text-gray-700 font-medium mb-2">
+            Password
+          </label>
           <input
             type="password"
             id="password"
@@ -48,13 +52,24 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Enter your password"
-            className="text-black mb-8 p-4 rounded-lg border border-black w-80 shadow-lg"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
           />
-          <button type="submit" className="text-black mt-12 p-4 rounded-lg border border-black w-80 shadow-lg bg-red-700">
+
+          <button
+            type="submit"
+            className="w-full py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 font-semibold shadow-md transition duration-300"
+          >
             Login
           </button>
-        </div>
-      </form>
+        </form>
+
+        {/* <p className="text-center text-gray-600 mt-6">
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-500 hover:underline">
+            Sign up
+          </a>
+        </p> */}
+      </div>
     </div>
   );
 }
