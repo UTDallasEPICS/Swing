@@ -24,7 +24,7 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
       <div className="w-full max-w-md bg-gray-100 rounded-lg shadow-lg p-8">
         <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Welcome Back
+          Welcome
         </h3>
         <form onSubmit={handleSubmit} className="flex flex-col">
           <label htmlFor="email" className="text-gray-700 font-medium mb-2">
