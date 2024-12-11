@@ -118,7 +118,7 @@ export default function Home() {
           <input
             type="submit"
             value="Upload"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md cursor-pointer transition duration-200"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md cursor-pointer transition duration-200 mt-3"
           />
         </form>
 
