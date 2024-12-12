@@ -95,5 +95,5 @@ npm install
 
 3. Add AWS configurations
 
-4. Run the development server
+5. Run the development server
 npm run dev
