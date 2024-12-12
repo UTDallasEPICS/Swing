@@ -93,11 +93,11 @@ cd web
 2. Install dependencies:
 npm install
 
-3. Add AWS configurations
-   Use AWS Managment Console
-   Login as root email/user
-   Go into "Users"
-   Click create "Access Key" for user (This creates access keys for users)
+3. AWS configurations
+Use AWS Managment Console
+Login as root email/user
+Go into "Users"
+Click create "Access Key" for user (This creates access keys for users)
 
 5. Run the development server
 npm run dev
