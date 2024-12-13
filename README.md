@@ -96,6 +96,7 @@ npm install
 3. AWS configurations
 Use AWS Managment Console
 Login as root email/user
+Need MFA which is already configured
 Go into "Users"
 Click create "Access Key" for user (This creates access keys for users)
 
