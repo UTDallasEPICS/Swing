@@ -87,7 +87,7 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-8 bg-white">
       <div>
-        <h1 className="text-5xl font-bold mb-32 text-center">Upload your videos here</h1>
+        <h1 className="text-5xl font-bold mb-32 text-center text-black">Upload your videos here</h1>
       </div>
 
       <div 

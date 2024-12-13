@@ -38,7 +38,7 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="Enter your email"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
           />
 
           <label htmlFor="password" className="text-gray-700 font-medium mb-2">
@@ -52,7 +52,7 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Enter your password"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
           />
 
           <button
