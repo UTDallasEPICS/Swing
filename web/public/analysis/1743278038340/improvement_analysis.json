@@ -1,0 +1,32 @@
+{
+  "overall_score": 0.9283319552956639,
+  "improved": false,
+  "criteria": {
+    "range_of_motion": true,
+    "smoothness": false,
+    "arm_rotation": false
+  },
+  "details": {
+    "range_of_motion": {
+      "score": 1.1577034236702257,
+      "details": {
+        "upper_arm": 0.9982338770983658,
+        "forearm": 1.3348294110519405
+      }
+    },
+    "smoothness": {
+      "score": 0.6272924422167663,
+      "details": {
+        "shoulder": 0.6557665527918295,
+        "elbow": 0.6156109058910801,
+        "wrist": 0.583736136136602
+      }
+    },
+    "arm_rotation": {
+      "score": 1.0,
+      "details": {
+        "outward_score": 0.0
+      }
+    }
+  }
+}

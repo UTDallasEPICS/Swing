@@ -25,6 +25,8 @@ interface ImprovementStatus {
         shoulder: number;
         elbow: number;
         wrist: number;
+        upper_arm: number;
+        forearm: number;
       };
     };
     smoothness: {
@@ -33,6 +35,8 @@ interface ImprovementStatus {
         shoulder: number;
         elbow: number;
         wrist: number;
+        upper_arm: number;
+        forearm: number;
       };
     };
     arm_rotation: {
@@ -40,6 +44,13 @@ interface ImprovementStatus {
       details: {
         before: number;
         after: number;
+        elbow_position_ratio: number;
+        elbow_angle: number;
+        max_extension: number;
+        outward_score: number;
+        lateral_distance: number;
+        forward_distance: number;
+        position_ratio: number;
       };
     };
   };
@@ -179,9 +190,20 @@ export default function Results() {
                 </span>
               </div>
               <div className="text-xs text-gray-500">
-                <div>Shoulder: {((improvementStatus.details.range_of_motion.details.shoulder - 1) * 100).toFixed(1)}%</div>
-                <div>Elbow: {((improvementStatus.details.range_of_motion.details.elbow - 1) * 100).toFixed(1)}%</div>
-                <div>Wrist: {((improvementStatus.details.range_of_motion.details.wrist - 1) * 100).toFixed(1)}%</div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Upper Arm Movement</span>
+                    <span className="font-medium">
+                      {((improvementStatus.details.range_of_motion.details.upper_arm - 1) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Forearm Movement</span>
+                    <span className="font-medium">
+                      {((improvementStatus.details.range_of_motion.details.forearm - 1) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -195,9 +217,20 @@ export default function Results() {
                 </span>
               </div>
               <div className="text-xs text-gray-500">
-                <div>Shoulder: {((improvementStatus.details.smoothness.details.shoulder - 1) * 100).toFixed(1)}%</div>
-                <div>Elbow: {((improvementStatus.details.smoothness.details.elbow - 1) * 100).toFixed(1)}%</div>
-                <div>Wrist: {((improvementStatus.details.smoothness.details.wrist - 1) * 100).toFixed(1)}%</div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Upper Arm Smoothness</span>
+                    <span className="font-medium">
+                      {((improvementStatus.details.smoothness.details.upper_arm - 1) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Forearm Smoothness</span>
+                    <span className="font-medium">
+                      {((improvementStatus.details.smoothness.details.forearm - 1) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -211,8 +244,14 @@ export default function Results() {
                 </span>
               </div>
               <div className="text-xs text-gray-500">
-                <div>Before: {(improvementStatus.details.arm_rotation.details.before * 100).toFixed(1)}%</div>
-                <div>After: {(improvementStatus.details.arm_rotation.details.after * 100).toFixed(1)}%</div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Outward Positioning</span>
+                    <span className="font-medium">
+                      {(improvementStatus.details.arm_rotation.details.outward_score * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

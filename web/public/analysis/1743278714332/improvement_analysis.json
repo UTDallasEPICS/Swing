@@ -1,0 +1,31 @@
+{
+  "overall_score": 0.9140125541189104,
+  "improved": false,
+  "criteria": {
+    "range_of_motion": true,
+    "smoothness": false,
+    "arm_rotation": false
+  },
+  "details": {
+    "range_of_motion": {
+      "score": 1.1577034236702257,
+      "details": {
+        "upper_arm": 0.9982338770983658,
+        "forearm": 1.3348294110519405
+      }
+    },
+    "smoothness": {
+      "score": 0.5843342386865056,
+      "details": {
+        "upper_arm": 0.5985212644041726,
+        "forearm": 0.5662634002149582
+      }
+    },
+    "arm_rotation": {
+      "score": 1.0,
+      "details": {
+        "outward_score": 0.0
+      }
+    }
+  }
+}
