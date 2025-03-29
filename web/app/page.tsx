@@ -20,27 +20,37 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center min-h-screen bg-white p-4">
       {/* Header Section */}
-      <div className="text-black flex justify-center items-center text-center pt-20 pb-12">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
-          Click below to upload your video after you have recorded it
-        </h2>
+      <div className="text-black flex flex-col items-center text-center pt-20 pb-12">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          Cerebral Palsy Arm Swing Analysis
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-600 max-w-2xl">
+          Upload before and after videos of your patient's arm swing to analyze improvement in unilateral cerebral palsy
+        </p>
       </div>
 
-      {/* Arrow Section */}
-      <div className="flex flex-col items-center">
-        {/* Line */}
-        <div className="w-0.5 h-[150px] sm:h-[200px] md:h-[250px] bg-black"></div>
-        {/* Arrow Tip */}
-        <div className="w-0 h-0 border-l-[8px] sm:border-l-[10px] border-l-transparent border-r-[8px]
-         sm:border-r-[10px] border-r-transparent border-t-[8px] sm:border-t-[10px] border-t-black"></div>
+      {/* Instructions Section */}
+      <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mb-8">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Instructions for Video Recording</h2>
+        <ul className="list-disc list-inside space-y-2 text-gray-600">
+          <li>Ensure the patient is standing in a well-lit area</li>
+          <li>Record the patient's arm swing from a side view</li>
+          <li>Keep the camera steady and at shoulder height</li>
+          <li>Record for at least 10 seconds</li>
+          <li>Upload both before and after treatment videos</li>
+        </ul>
       </div>
 
-      {/* Video Upload Button */}
+      {/* Upload Button */}
       <div className="flex flex-col justify-center items-center mt-5">
         <Link href="/videoUpload">
-          <button className="px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 bg-red-600 text-white rounded-lg 
-          cursor-pointer text-base sm:text-lg md:text-xl transition duration-300 hover:bg-red-700">
-            Go to Video Upload Page
+          <button className="px-8 py-4 bg-blue-600 text-white rounded-lg 
+            cursor-pointer text-lg font-semibold transition duration-300 hover:bg-blue-700
+            shadow-lg hover:shadow-xl flex items-center gap-2">
+            <span>Upload Patient Videos</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
           </button>
         </Link>
       </div>
