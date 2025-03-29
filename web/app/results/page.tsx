@@ -16,15 +16,11 @@ interface ImprovementStatus {
   criteria: {
     range_of_motion: boolean;
     smoothness: boolean;
-    arm_rotation: boolean;
   };
   details: {
     range_of_motion: {
       score: number;
       details: {
-        shoulder: number;
-        elbow: number;
-        wrist: number;
         upper_arm: number;
         forearm: number;
       };
@@ -32,25 +28,8 @@ interface ImprovementStatus {
     smoothness: {
       score: number;
       details: {
-        shoulder: number;
-        elbow: number;
-        wrist: number;
         upper_arm: number;
         forearm: number;
-      };
-    };
-    arm_rotation: {
-      score: number;
-      details: {
-        before: number;
-        after: number;
-        elbow_position_ratio: number;
-        elbow_angle: number;
-        max_extension: number;
-        outward_score: number;
-        lateral_distance: number;
-        forward_distance: number;
-        position_ratio: number;
       };
     };
   };
@@ -154,103 +133,66 @@ export default function Results() {
         </div>
       )}
 
-      {/* Improvement Status */}
+      {/* Analysis Results */}
       <div className="w-full max-w-6xl mb-8">
-        <div className={`p-6 rounded-lg ${isImprovement ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-          <div className="flex items-center mb-4">
-            <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${isImprovement ? 'bg-green-100' : 'bg-red-100'}`}>
-              {isImprovement ? (
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Range of Motion */}
+          <div className={`p-4 rounded-lg shadow-sm ${
+            improvementStatus.criteria.range_of_motion 
+              ? 'bg-green-50 border border-green-200' 
+              : 'bg-red-50 border border-red-200'
+          }`}>
+            <h3 className="font-medium text-gray-900 mb-2">Range of Motion</h3>
+            <div className="flex items-center mb-2">
+              <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus.criteria.range_of_motion ? 'bg-green-500' : 'bg-red-500'}`} />
+              <span className="text-sm text-gray-600">
+                {((improvementStatus.details.range_of_motion.score - 1) * 100).toFixed(1)}% {improvementStatus.criteria.range_of_motion ? 'improvement' : 'degradation'}
+              </span>
             </div>
-            <div className="ml-4">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {isImprovement ? 'Improvement Detected' : 'Degradation Detected'}
-              </h2>
-              <p className="text-gray-600">
-                {isImprovement ? 'Overall improvement' : 'Overall degradation'}: {Math.abs(Number(improvementPercentage))}%
-              </p>
+            <div className="text-xs text-gray-500">
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Upper Arm Movement</span>
+                  <span className="font-medium">
+                    {((improvementStatus.details.range_of_motion.details.upper_arm - 1) * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Forearm Movement</span>
+                  <span className="font-medium">
+                    {((improvementStatus.details.range_of_motion.details.forearm - 1) * 100).toFixed(1)}%
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Range of Motion */}
-            <div className="p-4 bg-white rounded-lg shadow-sm">
-              <h3 className="font-medium text-gray-900 mb-2">Range of Motion</h3>
-              <div className="flex items-center mb-2">
-                <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus.criteria.range_of_motion ? 'bg-green-500' : 'bg-red-500'}`} />
-                <span className="text-sm text-gray-600">
-                  {((improvementStatus.details.range_of_motion.score - 1) * 100).toFixed(1)}% {improvementStatus.criteria.range_of_motion ? 'improvement' : 'degradation'}
-                </span>
-              </div>
-              <div className="text-xs text-gray-500">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Upper Arm Movement</span>
-                    <span className="font-medium">
-                      {((improvementStatus.details.range_of_motion.details.upper_arm - 1) * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Forearm Movement</span>
-                    <span className="font-medium">
-                      {((improvementStatus.details.range_of_motion.details.forearm - 1) * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
+          {/* Movement Smoothness */}
+          <div className={`p-4 rounded-lg shadow-sm ${
+            improvementStatus.criteria.smoothness 
+              ? 'bg-green-50 border border-green-200' 
+              : 'bg-red-50 border border-red-200'
+          }`}>
+            <h3 className="font-medium text-gray-900 mb-2">Movement Smoothness</h3>
+            <div className="flex items-center mb-2">
+              <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus.criteria.smoothness ? 'bg-green-500' : 'bg-red-500'}`} />
+              <span className="text-sm text-gray-600">
+                {((improvementStatus.details.smoothness.score - 1) * 100).toFixed(1)}% {improvementStatus.criteria.smoothness ? 'improvement' : 'degradation'}
+              </span>
             </div>
-
-            {/* Movement Smoothness */}
-            <div className="p-4 bg-white rounded-lg shadow-sm">
-              <h3 className="font-medium text-gray-900 mb-2">Movement Smoothness</h3>
-              <div className="flex items-center mb-2">
-                <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus.criteria.smoothness ? 'bg-green-500' : 'bg-red-500'}`} />
-                <span className="text-sm text-gray-600">
-                  {((improvementStatus.details.smoothness.score - 1) * 100).toFixed(1)}% {improvementStatus.criteria.smoothness ? 'improvement' : 'degradation'}
-                </span>
-              </div>
-              <div className="text-xs text-gray-500">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Upper Arm Smoothness</span>
-                    <span className="font-medium">
-                      {((improvementStatus.details.smoothness.details.upper_arm - 1) * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Forearm Smoothness</span>
-                    <span className="font-medium">
-                      {((improvementStatus.details.smoothness.details.forearm - 1) * 100).toFixed(1)}%
-                    </span>
-                  </div>
+            <div className="text-xs text-gray-500">
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Upper Arm Smoothness</span>
+                  <span className="font-medium">
+                    {((improvementStatus.details.smoothness.details.upper_arm - 1) * 100).toFixed(1)}%
+                  </span>
                 </div>
-              </div>
-            </div>
-
-            {/* Arm Rotation */}
-            <div className="p-4 bg-white rounded-lg shadow-sm">
-              <h3 className="font-medium text-gray-900 mb-2">Arm Rotation</h3>
-              <div className="flex items-center mb-2">
-                <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus.criteria.arm_rotation ? 'bg-green-500' : 'bg-red-500'}`} />
-                <span className="text-sm text-gray-600">
-                  {((improvementStatus.details.arm_rotation.score - 1) * 100).toFixed(1)}% {improvementStatus.criteria.arm_rotation ? 'improvement' : 'degradation'}
-                </span>
-              </div>
-              <div className="text-xs text-gray-500">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Outward Positioning</span>
-                    <span className="font-medium">
-                      {(improvementStatus.details.arm_rotation.details.outward_score * 100).toFixed(1)}%
-                    </span>
-                  </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Forearm Smoothness</span>
+                  <span className="font-medium">
+                    {((improvementStatus.details.smoothness.details.forearm - 1) * 100).toFixed(1)}%
+                  </span>
                 </div>
               </div>
             </div>

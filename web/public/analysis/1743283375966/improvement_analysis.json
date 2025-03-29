@@ -1,0 +1,22 @@
+{
+  "criteria": {
+    "range_of_motion": true,
+    "smoothness": true
+  },
+  "details": {
+    "range_of_motion": {
+      "score": 1.1577034236702257,
+      "details": {
+        "upper_arm": 0.9982338770983658,
+        "forearm": 1.3348294110519405
+      }
+    },
+    "smoothness": {
+      "score": 1.724103201919333,
+      "details": {
+        "upper_arm": 1.6707844193516581,
+        "forearm": 1.7659626286089454
+      }
+    }
+  }
+}
