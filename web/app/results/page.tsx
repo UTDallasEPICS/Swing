@@ -43,47 +43,6 @@ interface ImprovementStatus {
       };
     };
   };
-  statistics?: {
-    range_of_motion: {
-      shoulder: {
-        statistic: number;
-        p_value: number;
-        significant: boolean;
-      };
-      elbow: {
-        statistic: number;
-        p_value: number;
-        significant: boolean;
-      };
-      wrist: {
-        statistic: number;
-        p_value: number;
-        significant: boolean;
-      };
-    };
-    smoothness: {
-      shoulder: {
-        statistic: number;
-        p_value: number;
-        significant: boolean;
-      };
-      elbow: {
-        statistic: number;
-        p_value: number;
-        significant: boolean;
-      };
-      wrist: {
-        statistic: number;
-        p_value: number;
-        significant: boolean;
-      };
-    };
-    arm_rotation: {
-      statistic: number;
-      p_value: number;
-      significant: boolean;
-    };
-  };
 }
 
 export default function Results() {
@@ -220,30 +179,9 @@ export default function Results() {
                 </span>
               </div>
               <div className="text-xs text-gray-500">
-                <div className="flex justify-between items-center">
-                  <span>Shoulder: {((improvementStatus.details.range_of_motion.details.shoulder - 1) * 100).toFixed(1)}%</span>
-                  {improvementStatus.statistics?.range_of_motion?.shoulder?.significant ? (
-                    <span className="text-green-600">Significant (p = {improvementStatus.statistics?.range_of_motion?.shoulder?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  ) : (
-                    <span className="text-gray-600">Not significant (p = {improvementStatus.statistics?.range_of_motion?.shoulder?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  )}
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Elbow: {((improvementStatus.details.range_of_motion.details.elbow - 1) * 100).toFixed(1)}%</span>
-                  {improvementStatus.statistics?.range_of_motion?.elbow?.significant ? (
-                    <span className="text-green-600">Significant (p = {improvementStatus.statistics?.range_of_motion?.elbow?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  ) : (
-                    <span className="text-gray-600">Not significant (p = {improvementStatus.statistics?.range_of_motion?.elbow?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  )}
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Wrist: {((improvementStatus.details.range_of_motion.details.wrist - 1) * 100).toFixed(1)}%</span>
-                  {improvementStatus.statistics?.range_of_motion?.wrist?.significant ? (
-                    <span className="text-green-600">Significant (p = {improvementStatus.statistics?.range_of_motion?.wrist?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  ) : (
-                    <span className="text-gray-600">Not significant (p = {improvementStatus.statistics?.range_of_motion?.wrist?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  )}
-                </div>
+                <div>Shoulder: {((improvementStatus.details.range_of_motion.details.shoulder - 1) * 100).toFixed(1)}%</div>
+                <div>Elbow: {((improvementStatus.details.range_of_motion.details.elbow - 1) * 100).toFixed(1)}%</div>
+                <div>Wrist: {((improvementStatus.details.range_of_motion.details.wrist - 1) * 100).toFixed(1)}%</div>
               </div>
             </div>
 
@@ -257,30 +195,9 @@ export default function Results() {
                 </span>
               </div>
               <div className="text-xs text-gray-500">
-                <div className="flex justify-between items-center">
-                  <span>Shoulder: {((improvementStatus.details.smoothness.details.shoulder - 1) * 100).toFixed(1)}%</span>
-                  {improvementStatus.statistics?.smoothness?.shoulder?.significant ? (
-                    <span className="text-green-600">Significant (p = {improvementStatus.statistics?.smoothness?.shoulder?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  ) : (
-                    <span className="text-gray-600">Not significant (p = {improvementStatus.statistics?.smoothness?.shoulder?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  )}
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Elbow: {((improvementStatus.details.smoothness.details.elbow - 1) * 100).toFixed(1)}%</span>
-                  {improvementStatus.statistics?.smoothness?.elbow?.significant ? (
-                    <span className="text-green-600">Significant (p = {improvementStatus.statistics?.smoothness?.elbow?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  ) : (
-                    <span className="text-gray-600">Not significant (p = {improvementStatus.statistics?.smoothness?.elbow?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  )}
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Wrist: {((improvementStatus.details.smoothness.details.wrist - 1) * 100).toFixed(1)}%</span>
-                  {improvementStatus.statistics?.smoothness?.wrist?.significant ? (
-                    <span className="text-green-600">Significant (p = {improvementStatus.statistics?.smoothness?.wrist?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  ) : (
-                    <span className="text-gray-600">Not significant (p = {improvementStatus.statistics?.smoothness?.wrist?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  )}
-                </div>
+                <div>Shoulder: {((improvementStatus.details.smoothness.details.shoulder - 1) * 100).toFixed(1)}%</div>
+                <div>Elbow: {((improvementStatus.details.smoothness.details.elbow - 1) * 100).toFixed(1)}%</div>
+                <div>Wrist: {((improvementStatus.details.smoothness.details.wrist - 1) * 100).toFixed(1)}%</div>
               </div>
             </div>
 
@@ -294,17 +211,8 @@ export default function Results() {
                 </span>
               </div>
               <div className="text-xs text-gray-500">
-                <div className="flex justify-between items-center">
-                  <span>Before: {(improvementStatus.details.arm_rotation.details.before * 100).toFixed(1)}%</span>
-                  <span>After: {(improvementStatus.details.arm_rotation.details.after * 100).toFixed(1)}%</span>
-                </div>
-                <div className="mt-1">
-                  {improvementStatus.statistics?.arm_rotation?.significant ? (
-                    <span className="text-green-600">Significant improvement (p = {improvementStatus.statistics?.arm_rotation?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  ) : (
-                    <span className="text-gray-600">Not statistically significant (p = {improvementStatus.statistics?.arm_rotation?.p_value?.toFixed(3) ?? 'N/A'})</span>
-                  )}
-                </div>
+                <div>Before: {(improvementStatus.details.arm_rotation.details.before * 100).toFixed(1)}%</div>
+                <div>After: {(improvementStatus.details.arm_rotation.details.after * 100).toFixed(1)}%</div>
               </div>
             </div>
           </div>

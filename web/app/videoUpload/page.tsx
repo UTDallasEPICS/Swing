@@ -48,12 +48,6 @@ export default function VideoUpload() {
         continue
       }
 
-      const duration = await checkVideoDuration(file)
-      if (duration > 30) {
-        setError(`${file.name} exceeds the 30 seconds limit.`)
-        continue
-      }
-
       // If we have an active upload type, use that
       if (activeUpload) {
         if (activeUpload === 'before') {
