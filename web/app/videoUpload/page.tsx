@@ -1,15 +1,19 @@
 'use client'
 
 import Image from 'next/image'
-import { Upload } from 'lucide-react'
+import { Upload, Video, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react'
 import { useState, useCallback } from 'react'
 import styles from './video.module.css'
-import { onSubmit } from '../actions'
+import { useRouter } from 'next/navigation'
 
-export default function Home() {
+export default function VideoUpload() {
   const [dragActive, setDragActive] = useState<boolean>(false)
-  const [videoFiles, setVideoFiles] = useState<File[]>([]) // Store multiple files
-  const [isProcessing, setIsProcessing] = useState<boolean>(false) // Processing state
+  const [beforeVideo, setBeforeVideo] = useState<File | null>(null)
+  const [afterVideo, setAfterVideo] = useState<File | null>(null)
+  const [isProcessing, setIsProcessing] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+  const [activeUpload, setActiveUpload] = useState<'before' | 'after' | null>(null)
+  const router = useRouter()
 
   const handleDrag = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -25,46 +29,51 @@ export default function Home() {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
+    setError(null)
 
-    const files = e.dataTransfer.files
-    handleFileUpload(Array.from(files)) // Convert FileList to an array
+    const files = Array.from(e.dataTransfer.files)
+    handleFileUpload(files)
   }, [])
 
   const handleFileUpload = async (files: File[]) => {
-    if (videoFiles.length + files.length > 2) {
-      alert('You can upload up to 2 videos only.')
-      return
-    }
-
     const validTypes = ['video/mp4', 'video/quicktime', 'video/x-ms-wmv', 'video/x-flv', 'video/avi', 'video/x-matroska', 'video/webm']
-    const validFiles: File[] = []
-
-    setIsProcessing(true) // Start processing animation
-
+    
     for (const file of files) {
       if (!validTypes.includes(file.type)) {
-        alert(`${file.name} is not a valid video type.`)
+        setError(`${file.name} is not a valid video type.`)
         continue
       }
       if (file.size > 50 * 1024 * 1024) {
-        alert(`${file.name} exceeds the 50MB file size limit.`)
+        setError(`${file.name} exceeds the 50MB file size limit.`)
         continue
       }
 
       const duration = await checkVideoDuration(file)
       if (duration > 30) {
-        alert(`${file.name} exceeds the 30 seconds limit.`)
+        setError(`${file.name} exceeds the 30 seconds limit.`)
         continue
       }
 
-      validFiles.push(file)
+      // If we have an active upload type, use that
+      if (activeUpload) {
+        if (activeUpload === 'before') {
+          setBeforeVideo(file)
+        } else {
+          setAfterVideo(file)
+        }
+        setActiveUpload(null)
+      } 
+      // Otherwise, try to determine which video to set
+      else {
+        if (!beforeVideo) {
+          setBeforeVideo(file)
+        } else if (!afterVideo) {
+          setAfterVideo(file)
+        } else {
+          setError('Please select which video you want to upload (Before or After)')
+        }
+      }
     }
-
-    setVideoFiles((prevFiles) => [...prevFiles, ...validFiles]) // Add valid files to the state
-    setTimeout(() => {
-      setIsProcessing(false) // Stop processing animation after "uploading"
-      console.log('Videos processed successfully:', validFiles)
-    }, 2000) // Simulate server processing time
   }
 
   const checkVideoDuration = (file: File): Promise<number> => {
@@ -74,7 +83,7 @@ export default function Home() {
       videoElement.src = objectURL
       videoElement.onloadeddata = () => {
         resolve(videoElement.duration)
-        URL.revokeObjectURL(objectURL) // Cleanup the URL after usage
+        URL.revokeObjectURL(objectURL)
       }
     })
   }
@@ -84,58 +93,170 @@ export default function Home() {
     handleFileUpload(files)
   }
 
+  const removeVideo = (type: 'before' | 'after') => {
+    if (type === 'before') {
+      setBeforeVideo(null)
+    } else {
+      setAfterVideo(null)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!beforeVideo || !afterVideo) {
+      setError('Please select both videos')
+      return
+    }
+
+    setIsProcessing(true)
+    setError(null)
+
+    const formData = new FormData()
+    formData.append('beforeVideo', beforeVideo)
+    formData.append('afterVideo', afterVideo)
+
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to analyze videos')
+      }
+
+      // Redirect to results page with all analysis URLs
+      router.push(`/results?before=${result.beforeResult}&after=${result.afterResult}&improvement=${result.improvementResult}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+      setIsProcessing(false)
+    }
+  }
+
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-8 bg-white">
-      <div>
-        <h1 className="text-5xl font-bold mb-32 text-center text-black">Upload your videos here</h1>
-      </div>
-
-      <div 
-        className={`w-full max-w-xl border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center gap-8 ${dragActive ? 'border-blue-500 bg-blue-50' : ''}`}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-      >
-        <div className="flex flex-col items-center text-center gap-2">
-          <div className="mb-4 flex justify-center items-center w-12 h-12">
-            <Image src="/Uploadicon.svg" alt="Upload icon" width={48} height={48} />
-          </div>
-          <p className="text-lg text-gray-700 mb-2">Upload up to 2 video files</p>
-          <p className="text-sm text-gray-500">mp4, mov, wmv, flv, avi, mkv, webm</p>
-          <p className="text-sm text-gray-500">Max 30 seconds and 50 MB per file</p>
-        </div>
-
-        <form action={onSubmit} className="flex flex-col items-center w-full gap-4 mt-6">
-          <input
-            type="file"
-            name="file"
-            className="block w-full max-w-xs text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            onChange={handleFileSelect}
-            accept="video/mp4,video/quicktime,video/x-ms-wmv,video/x-flv,video/avi,video/x-matroska,video/webm"
-            multiple
-          />
-          <input
-            type="submit"
-            value="Upload"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md cursor-pointer transition duration-200 mt-4"
-          />
-        </form>
-
-        <div className="mt-5">
-          {videoFiles.map((file, index) => (
-            <div key={index} className="mb-2 text-sm font-medium text-gray-700">
-              <p className="inline-block mr-2">{file.name}</p>
-              {isProcessing && <span className="text-gray-500 italic text-xs">Processing...</span>}
+      <div className="max-w-4xl w-full">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Upload Patient Videos</h1>
+        
+        <form onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <AlertCircle className="h-5 w-5 text-red-400" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
+          )}
 
-        {isProcessing && (
-          <div className="flex justify-center items-center mt-5">
-            <div className="spinner border-4 border-gray-200 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Before Video Section */}
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Before Treatment</h2>
+              {beforeVideo ? (
+                <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <Video className="h-6 w-6 text-blue-500" />
+                    <span className="text-sm font-medium text-gray-700">{beforeVideo.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeVideo('before')}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setActiveUpload('before')}
+                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                >
+                  <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600">Click to upload Before video</p>
+                </button>
+              )}
+            </div>
+
+            {/* After Video Section */}
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">After Treatment</h2>
+              {afterVideo ? (
+                <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <Video className="h-6 w-6 text-green-500" />
+                    <span className="text-sm font-medium text-gray-700">{afterVideo.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeVideo('after')}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setActiveUpload('after')}
+                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                >
+                  <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600">Click to upload After video</p>
+                </button>
+              )}
+            </div>
           </div>
-        )}
+
+          {activeUpload && (
+            <div className="mb-8">
+              <div className="bg-blue-50 p-4 rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ArrowRight className="h-5 w-5 text-blue-500" />
+                  <span className="text-blue-700 font-medium">
+                    Uploading {activeUpload === 'before' ? 'Before' : 'After'} Treatment video
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  name="file"
+                  className="block w-full max-w-xs text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  onChange={handleFileSelect}
+                  accept="video/mp4,video/quicktime,video/x-ms-wmv,video/x-flv,video/avi,video/x-matroska,video/webm"
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8 flex justify-center">
+            <button
+              type="submit"
+              disabled={!beforeVideo || !afterVideo || isProcessing}
+              className={`px-8 py-4 rounded-lg text-white font-semibold flex items-center gap-2
+                ${(!beforeVideo || !afterVideo || isProcessing) 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-blue-600 hover:bg-blue-700'}`}
+            >
+              {isProcessing ? (
+                <>
+                  <div className="spinner border-4 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></div>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-5 w-5" />
+                  Analyze Videos
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </main>
   )

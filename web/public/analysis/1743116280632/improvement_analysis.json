@@ -1,0 +1,75 @@
+{
+  "overall_score": 0.6161270849800462,
+  "improved": false,
+  "criteria": {
+    "range_of_motion": false,
+    "smoothness": false,
+    "arm_rotation": false
+  },
+  "details": {
+    "range_of_motion": {
+      "score": 0.5499212846921103,
+      "details": {
+        "shoulder": 0.2579938121272112,
+        "elbow": 0.5091707416331359,
+        "wrist": 0.8637473048185973
+      }
+    },
+    "smoothness": {
+      "score": 0.43696920490246394,
+      "details": {
+        "shoulder": 0.6536816319081216,
+        "elbow": 0.3376825864962806,
+        "wrist": 0.28544850423152934
+      }
+    },
+    "arm_rotation": {
+      "score": 0.8614907653455643,
+      "details": {
+        "before": 0.9310073781531719,
+        "after": 0.8020542587475433
+      }
+    }
+  },
+  "statistics": {
+    "range_of_motion": {
+      "shoulder": {
+        "statistic": 0.0,
+        "p_value": 1.1641532182693481e-10,
+        "significant": true
+      },
+      "elbow": {
+        "statistic": 10.0,
+        "p_value": 5.005858838558197e-09,
+        "significant": true
+      },
+      "wrist": {
+        "statistic": 249.0,
+        "p_value": 0.41668229072820395,
+        "significant": false
+      }
+    },
+    "smoothness": {
+      "shoulder": {
+        "statistic": 247.0,
+        "p_value": 0.3974188358988613,
+        "significant": false
+      },
+      "elbow": {
+        "statistic": 101.0,
+        "p_value": 0.0004647650057449937,
+        "significant": true
+      },
+      "wrist": {
+        "statistic": 74.0,
+        "p_value": 4.660175181925297e-05,
+        "significant": true
+      }
+    },
+    "arm_rotation": {
+      "statistic": 6.0,
+      "p_value": 1.6298145055770874e-09,
+      "significant": true
+    }
+  }
+}
