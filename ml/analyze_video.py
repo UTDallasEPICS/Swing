@@ -98,10 +98,20 @@ def analyze_video(video_path, output_path):
             derivatives[f'{joint}_{axis}_Acceleration'] = a
 
     # Create the analysis plot
-    fig = plt.figure(figsize=(15, 10))
+    fig = plt.figure(figsize=(15, 15))
 
-    # Plot positions
-    plt.subplot(3, 1, 1)
+    # Plot positions for all joints
+    plt.subplot(3, 3, 1)
+    plt.plot(time, pose_data['Shoulder_X'], label='X')
+    plt.plot(time, pose_data['Shoulder_Y'], label='Y')
+    plt.plot(time, pose_data['Shoulder_Z'], label='Z')
+    plt.title('Shoulder Position')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Position')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(3, 3, 2)
     plt.plot(time, pose_data['Elbow_X'], label='X')
     plt.plot(time, pose_data['Elbow_Y'], label='Y')
     plt.plot(time, pose_data['Elbow_Z'], label='Z')
@@ -111,8 +121,28 @@ def analyze_video(video_path, output_path):
     plt.legend()
     plt.grid(True)
 
-    # Plot velocities
-    plt.subplot(3, 1, 2)
+    plt.subplot(3, 3, 3)
+    plt.plot(time, pose_data['Wrist_X'], label='X')
+    plt.plot(time, pose_data['Wrist_Y'], label='Y')
+    plt.plot(time, pose_data['Wrist_Z'], label='Z')
+    plt.title('Wrist Position')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Position')
+    plt.legend()
+    plt.grid(True)
+
+    # Plot velocities for all joints
+    plt.subplot(3, 3, 4)
+    plt.plot(time, derivatives['Shoulder_X_Velocity'], label='X')
+    plt.plot(time, derivatives['Shoulder_Y_Velocity'], label='Y')
+    plt.plot(time, derivatives['Shoulder_Z_Velocity'], label='Z')
+    plt.title('Shoulder Velocity')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Velocity')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(3, 3, 5)
     plt.plot(time, derivatives['Elbow_X_Velocity'], label='X')
     plt.plot(time, derivatives['Elbow_Y_Velocity'], label='Y')
     plt.plot(time, derivatives['Elbow_Z_Velocity'], label='Z')
@@ -122,12 +152,42 @@ def analyze_video(video_path, output_path):
     plt.legend()
     plt.grid(True)
 
-    # Plot accelerations
-    plt.subplot(3, 1, 3)
+    plt.subplot(3, 3, 6)
+    plt.plot(time, derivatives['Wrist_X_Velocity'], label='X')
+    plt.plot(time, derivatives['Wrist_Y_Velocity'], label='Y')
+    plt.plot(time, derivatives['Wrist_Z_Velocity'], label='Z')
+    plt.title('Wrist Velocity')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Velocity')
+    plt.legend()
+    plt.grid(True)
+
+    # Plot accelerations for all joints
+    plt.subplot(3, 3, 7)
+    plt.plot(time, derivatives['Shoulder_X_Acceleration'], label='X')
+    plt.plot(time, derivatives['Shoulder_Y_Acceleration'], label='Y')
+    plt.plot(time, derivatives['Shoulder_Z_Acceleration'], label='Z')
+    plt.title('Shoulder Acceleration')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Acceleration')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(3, 3, 8)
     plt.plot(time, derivatives['Elbow_X_Acceleration'], label='X')
     plt.plot(time, derivatives['Elbow_Y_Acceleration'], label='Y')
     plt.plot(time, derivatives['Elbow_Z_Acceleration'], label='Z')
     plt.title('Elbow Acceleration')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Acceleration')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(3, 3, 9)
+    plt.plot(time, derivatives['Wrist_X_Acceleration'], label='X')
+    plt.plot(time, derivatives['Wrist_Y_Acceleration'], label='Y')
+    plt.plot(time, derivatives['Wrist_Z_Acceleration'], label='Z')
+    plt.title('Wrist Acceleration')
     plt.xlabel('Time (s)')
     plt.ylabel('Acceleration')
     plt.legend()
