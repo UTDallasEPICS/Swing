@@ -170,7 +170,7 @@ export default function VideoUpload() {
                 <button
                   type="button"
                   onClick={() => setActiveUpload('before')}
-                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-gray-500 hover:bg-gray-200 transition-colors"
                 >
                   <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-600">Click to upload Before video</p>
@@ -199,7 +199,7 @@ export default function VideoUpload() {
                 <button
                   type="button"
                   onClick={() => setActiveUpload('after')}
-                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-gray-500 hover:bg-gray-200 transition-colors"
                 >
                   <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-600">Click to upload After video</p>
