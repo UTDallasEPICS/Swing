@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     // Get the project root directory (go up three levels from web/app/api/analyze)
-    const projectRoot = path.resolve(process.cwd(), '..', '..', '..', 'SwingProject', 'Swing');
+    const projectRoot = path.resolve(process.cwd(), '..', '..', '..', 'UpdatedSwing', 'Swing');
     console.log('Project root:', projectRoot);
 
     // Create temporary directory for processing
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     fs.mkdirSync(outputDir, { recursive: true });
     console.log('Output directory:', outputDir);
 
-    // Run analysis for both videos
+    // Run analysis for both videos in parallel
     const beforeOutput = path.join(outputDir, 'before_analysis.png');
     const afterOutput = path.join(outputDir, 'after_analysis.png');
     const beforeJson = path.join(outputDir, 'before_analysis.json');
@@ -63,53 +63,42 @@ export async function POST(request: Request) {
     const pythonPath = process.env.PYTHON_PATH || 'python';
     console.log('Using Python:', pythonPath);
 
-    // Run the analysis script for before video
-    await new Promise((resolve, reject) => {
-      const pythonProcess = spawn(pythonPath, [
-        analyzeScriptPath,
-        beforePath,
-        beforeOutput
-      ], {
-        cwd: projectRoot
-      });
+    // Function to run video analysis
+    const runVideoAnalysis = (videoPath: string, outputPath: string) => {
+      return new Promise((resolve, reject) => {
+        const pythonProcess = spawn(pythonPath, [
+          analyzeScriptPath,
+          videoPath,
+          outputPath
+        ], {
+          cwd: projectRoot
+        });
 
-      pythonProcess.stdout.on('data', (data) => {
-        console.log(`Python stdout: ${data}`);
-      });
+        pythonProcess.stdout.on('data', (data) => {
+          console.log(`Python stdout: ${data}`);
+        });
 
-      pythonProcess.stderr.on('data', (data) => {
-        console.error(`Python stderr: ${data}`);
-      });
+        pythonProcess.stderr.on('data', (data) => {
+          console.error(`Python stderr: ${data}`);
+        });
 
-      pythonProcess.on('close', (code) => {
-        if (code === 0) resolve(null);
-        else reject(new Error(`Python process exited with code ${code}`));
+        pythonProcess.on('close', (code) => {
+          if (code === 0) resolve(null);
+          else reject(new Error(`Python process exited with code ${code}`));
+        });
       });
-    });
+    };
 
-    // Run the analysis script for after video
-    await new Promise((resolve, reject) => {
-      const pythonProcess = spawn(pythonPath, [
-        analyzeScriptPath,
-        afterPath,
-        afterOutput
-      ], {
-        cwd: projectRoot
-      });
-
-      pythonProcess.stdout.on('data', (data) => {
-        console.log(`Python stdout: ${data}`);
-      });
-
-      pythonProcess.stderr.on('data', (data) => {
-        console.error(`Python stderr: ${data}`);
-      });
-
-      pythonProcess.on('close', (code) => {
-        if (code === 0) resolve(null);
-        else reject(new Error(`Python process exited with code ${code}`));
-      });
-    });
+    // Run both video analyses in parallel
+    try {
+      await Promise.all([
+        runVideoAnalysis(beforePath, beforeOutput),
+        runVideoAnalysis(afterPath, afterOutput)
+      ]);
+    } catch (error) {
+      console.error('Error during video analysis:', error);
+      throw error;
+    }
 
     // Run the improvement analysis
     const improvementOutput = path.join(outputDir, 'improvement_analysis.json');

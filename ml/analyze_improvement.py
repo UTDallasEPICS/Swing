@@ -3,6 +3,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 import json
 import os
+from scipy.stats import wilcoxon
 
 def calculate_range_of_motion(pose_data):
     """Calculate the range of motion for upper arm and forearm segments."""
@@ -21,11 +22,15 @@ def calculate_range_of_motion(pose_data):
     upper_arm_y = elbow_y - shoulder_y
     upper_arm_z = elbow_z - shoulder_z
     
-    # Calculate range of motion for upper arm
+    # Calculate range of motion for upper arm in each direction
     upper_arm_x_range = np.max(upper_arm_x) - np.min(upper_arm_x)
     upper_arm_y_range = np.max(upper_arm_y) - np.min(upper_arm_y)
     upper_arm_z_range = np.max(upper_arm_z) - np.min(upper_arm_z)
-    ranges['UpperArm'] = float(np.sqrt(upper_arm_x_range**2 + upper_arm_y_range**2 + upper_arm_z_range**2))
+    
+    # Calculate the magnitude of movement in each direction
+    # Use a weighted sum instead of direct magnitude to reduce sensitivity
+    upper_arm_range = (upper_arm_x_range + upper_arm_y_range + upper_arm_z_range) / 3
+    ranges['UpperArm'] = float(upper_arm_range)
     
     # Calculate forearm movement (elbow to wrist)
     wrist_x = np.array(pose_data['Wrist_X'])
@@ -37,11 +42,15 @@ def calculate_range_of_motion(pose_data):
     forearm_y = wrist_y - elbow_y
     forearm_z = wrist_z - elbow_z
     
-    # Calculate range of motion for forearm
+    # Calculate range of motion for forearm in each direction
     forearm_x_range = np.max(forearm_x) - np.min(forearm_x)
     forearm_y_range = np.max(forearm_y) - np.min(forearm_y)
     forearm_z_range = np.max(forearm_z) - np.min(forearm_z)
-    ranges['Forearm'] = float(np.sqrt(forearm_x_range**2 + forearm_y_range**2 + forearm_z_range**2))
+    
+    # Calculate the magnitude of movement in each direction
+    # Use a weighted sum instead of direct magnitude to reduce sensitivity
+    forearm_range = (forearm_x_range + forearm_y_range + forearm_z_range) / 3
+    ranges['Forearm'] = float(forearm_range)
     
     return ranges
 
@@ -108,17 +117,57 @@ def calculate_smoothness(pose_data):
 
 def extract_features(pose_data):
     """Extract all relevant features for improvement analysis."""
+    # Calculate summary statistics for improvement scores
     ranges = calculate_range_of_motion(pose_data)
     smoothness = calculate_smoothness(pose_data)
     
-    features = [
-        ranges['UpperArm'],
-        ranges['Forearm'],
-        smoothness['UpperArm'],
-        smoothness['Forearm']
-    ]
+    # Extract raw measurements for Wilcoxon test
+    # Upper arm vectors
+    upper_arm_x = np.array(pose_data['Elbow_X']) - np.array(pose_data['Shoulder_X'])
+    upper_arm_y = np.array(pose_data['Elbow_Y']) - np.array(pose_data['Shoulder_Y'])
+    upper_arm_z = np.array(pose_data['Elbow_Z']) - np.array(pose_data['Shoulder_Z'])
     
-    return features
+    # Calculate the magnitude of movement at each time point
+    # Use a weighted sum instead of direct magnitude
+    upper_arm_magnitude = (np.abs(upper_arm_x) + np.abs(upper_arm_y) + np.abs(upper_arm_z)) / 3
+    
+    # Forearm vectors
+    forearm_x = np.array(pose_data['Wrist_X']) - np.array(pose_data['Elbow_X'])
+    forearm_y = np.array(pose_data['Wrist_Y']) - np.array(pose_data['Elbow_Y'])
+    forearm_z = np.array(pose_data['Wrist_Z']) - np.array(pose_data['Elbow_Z'])
+    
+    # Calculate the magnitude of movement at each time point
+    # Use a weighted sum instead of direct magnitude
+    forearm_magnitude = (np.abs(forearm_x) + np.abs(forearm_y) + np.abs(forearm_z)) / 3
+    
+    # Calculate jerk for smoothness
+    time = np.array(pose_data['Timestamp'])
+    
+    print("\nDebug: Movement magnitudes:")
+    print("Upper arm magnitude range:", np.min(upper_arm_magnitude), "to", np.max(upper_arm_magnitude))
+    print("Forearm magnitude range:", np.min(forearm_magnitude), "to", np.max(forearm_magnitude))
+    
+    # Ensure we have enough data points for gradient calculation
+    if len(time) < 4:  # Need at least 4 points for jerk calculation
+        print("Warning: Not enough time points for jerk calculation")
+        upper_arm_jerk = np.zeros_like(upper_arm_magnitude)
+        forearm_jerk = np.zeros_like(forearm_magnitude)
+    else:
+        upper_arm_jerk = np.gradient(np.gradient(np.gradient(upper_arm_magnitude, time), time), time)
+        forearm_jerk = np.gradient(np.gradient(np.gradient(forearm_magnitude, time), time), time)
+    
+    return {
+        'summary': {
+            'ranges': ranges,
+            'smoothness': smoothness
+        },
+        'raw': {
+            'upper_arm_magnitude': upper_arm_magnitude,
+            'forearm_magnitude': forearm_magnitude,
+            'upper_arm_jerk': upper_arm_jerk,
+            'forearm_jerk': forearm_jerk
+        }
+    }
 
 def calculate_improvement_score(before_value, after_value):
     """Calculate improvement score with proper handling of relative changes."""
@@ -140,40 +189,243 @@ def analyze_improvement(before_data, after_data):
     before_features = extract_features(before_data)
     after_features = extract_features(after_data)
     
-    # Calculate improvement scores for each criterion
+    print("\nBefore video data:")
+    print("Number of time points:", len(before_data['Timestamp']))
+    print("Sample of timestamps:", before_data['Timestamp'][:5])
+    
+    print("\nAfter video data:")
+    print("Number of time points:", len(after_data['Timestamp']))
+    print("Sample of timestamps:", after_data['Timestamp'][:5])
+    
+    # Calculate improvement scores using summary statistics
     improvement_scores = {
         'range_of_motion': {
             'score': calculate_improvement_score(
-                (before_features[0] + before_features[1]) / 2,  # Average of upper arm and forearm
-                (after_features[0] + after_features[1]) / 2
+                (before_features['summary']['ranges']['UpperArm'] + before_features['summary']['ranges']['Forearm']) / 2,
+                (after_features['summary']['ranges']['UpperArm'] + after_features['summary']['ranges']['Forearm']) / 2
             ),
             'details': {
-                'upper_arm': calculate_improvement_score(before_features[0], after_features[0]),
-                'forearm': calculate_improvement_score(before_features[1], after_features[1])
+                'upper_arm': calculate_improvement_score(before_features['summary']['ranges']['UpperArm'], after_features['summary']['ranges']['UpperArm']),
+                'forearm': calculate_improvement_score(before_features['summary']['ranges']['Forearm'], after_features['summary']['ranges']['Forearm'])
             }
         },
         'smoothness': {
             'score': calculate_improvement_score(
-                (before_features[2] + before_features[3]) / 2,  # Average of upper arm and forearm smoothness
-                (after_features[2] + after_features[3]) / 2
+                (before_features['summary']['smoothness']['UpperArm'] + before_features['summary']['smoothness']['Forearm']) / 2,
+                (after_features['summary']['smoothness']['UpperArm'] + after_features['summary']['smoothness']['Forearm']) / 2
             ),
             'details': {
-                'upper_arm': calculate_improvement_score(before_features[2], after_features[2]),
-                'forearm': calculate_improvement_score(before_features[3], after_features[3])
+                'upper_arm': calculate_improvement_score(before_features['summary']['smoothness']['UpperArm'], after_features['summary']['smoothness']['UpperArm']),
+                'forearm': calculate_improvement_score(before_features['summary']['smoothness']['Forearm'], after_features['summary']['smoothness']['Forearm'])
             }
         }
     }
     
-    return {
+    # Perform Wilcoxon tests on the raw data
+    print("\nPerforming Wilcoxon tests...")
+    
+    # Ensure arrays are the same length by resampling to the shorter length
+    min_length = min(len(before_features['raw']['upper_arm_magnitude']), 
+                    len(after_features['raw']['upper_arm_magnitude']))
+    
+    # Resample arrays to the same length
+    before_upper_arm = before_features['raw']['upper_arm_magnitude'][:min_length]
+    after_upper_arm = after_features['raw']['upper_arm_magnitude'][:min_length]
+    before_forearm = before_features['raw']['forearm_magnitude'][:min_length]
+    after_forearm = after_features['raw']['forearm_magnitude'][:min_length]
+    
+    # Remove any NaN or infinite values
+    mask = ~(np.isnan(before_upper_arm) | np.isnan(after_upper_arm) | 
+             np.isinf(before_upper_arm) | np.isinf(after_upper_arm))
+    before_upper_arm = before_upper_arm[mask]
+    after_upper_arm = after_upper_arm[mask]
+    
+    mask = ~(np.isnan(before_forearm) | np.isnan(after_forearm) | 
+             np.isinf(before_forearm) | np.isinf(after_forearm))
+    before_forearm = before_forearm[mask]
+    after_forearm = after_forearm[mask]
+    
+    # Perform Wilcoxon tests
+    try:
+        print("\nDebug: Data shapes for Wilcoxon tests:")
+        print("Before upper arm magnitude:", before_upper_arm.shape, "Sample:", before_upper_arm[:5])
+        print("After upper arm magnitude:", after_upper_arm.shape, "Sample:", after_upper_arm[:5])
+        print("Before forearm magnitude:", before_forearm.shape, "Sample:", before_forearm[:5])
+        print("After forearm magnitude:", after_forearm.shape, "Sample:", after_forearm[:5])
+        
+        # Ensure we have enough data points for the test
+        if len(before_upper_arm) < 2 or len(after_upper_arm) < 2:
+            raise ValueError("Insufficient data points for upper arm test")
+        if len(before_forearm) < 2 or len(after_forearm) < 2:
+            raise ValueError("Insufficient data points for forearm test")
+            
+        # Calculate differences for debugging
+        upper_arm_diff = after_upper_arm - before_upper_arm
+        forearm_diff = after_forearm - before_forearm
+        print("\nDebug: Mean differences:")
+        print("Upper arm mean difference:", np.mean(upper_arm_diff))
+        print("Forearm mean difference:", np.mean(forearm_diff))
+        
+        # Perform Wilcoxon tests with two-sided alternative
+        # This will detect any significant difference, not just improvement
+        upper_arm_test = wilcoxon(before_upper_arm, after_upper_arm, zero_method='wilcox')
+        forearm_test = wilcoxon(before_forearm, after_forearm, zero_method='wilcox')
+        
+        print("\nDebug: Wilcoxon test results:")
+        print("Upper arm test:", upper_arm_test)
+        print("Forearm test:", forearm_test)
+        
+        # Add smoothness tests
+        print("\nDebug: Smoothness data shapes:")
+        print("Before upper arm jerk:", before_features['raw']['upper_arm_jerk'].shape)
+        print("After upper arm jerk:", after_features['raw']['upper_arm_jerk'].shape)
+        print("Before forearm jerk:", before_features['raw']['forearm_jerk'].shape)
+        print("After forearm jerk:", after_features['raw']['forearm_jerk'].shape)
+        
+        # Ensure arrays are the same length for smoothness tests
+        min_length = min(len(before_features['raw']['upper_arm_jerk']), 
+                        len(after_features['raw']['upper_arm_jerk']))
+        
+        before_upper_jerk = before_features['raw']['upper_arm_jerk'][:min_length]
+        after_upper_jerk = after_features['raw']['upper_arm_jerk'][:min_length]
+        before_fore_jerk = before_features['raw']['forearm_jerk'][:min_length]
+        after_fore_jerk = after_features['raw']['forearm_jerk'][:min_length]
+        
+        # Remove any NaN or infinite values from jerk data
+        mask = ~(np.isnan(before_upper_jerk) | np.isnan(after_upper_jerk) | 
+                 np.isinf(before_upper_jerk) | np.isinf(after_upper_jerk))
+        before_upper_jerk = before_upper_jerk[mask]
+        after_upper_jerk = after_upper_jerk[mask]
+        
+        mask = ~(np.isnan(before_fore_jerk) | np.isnan(after_fore_jerk) | 
+                 np.isinf(before_fore_jerk) | np.isinf(after_fore_jerk))
+        before_fore_jerk = before_fore_jerk[mask]
+        after_fore_jerk = after_fore_jerk[mask]
+        
+        print("\nDebug: Cleaned jerk data shapes:")
+        print("Upper arm jerk:", before_upper_jerk.shape, after_upper_jerk.shape)
+        print("Forearm jerk:", before_fore_jerk.shape, after_fore_jerk.shape)
+        
+        # For smoothness, we want to test if after < before (less jerk means more smooth)
+        upper_arm_smoothness_test = wilcoxon(before_upper_jerk, after_upper_jerk, zero_method='wilcox', alternative='greater')
+        forearm_smoothness_test = wilcoxon(before_fore_jerk, after_fore_jerk, zero_method='wilcox', alternative='greater')
+        
+        print("\nDebug: Smoothness test results:")
+        print("Upper arm smoothness test:", upper_arm_smoothness_test)
+        print("Forearm smoothness test:", forearm_smoothness_test)
+        
+        wilcoxon_results = {
+            'range_of_motion': {
+                'upper_arm': {
+                    'statistic': float(upper_arm_test.statistic),
+                    'p_value': float(upper_arm_test.pvalue),
+                    'significant': bool(upper_arm_test.pvalue < 0.05)
+                },
+                'forearm': {
+                    'statistic': float(forearm_test.statistic),
+                    'p_value': float(forearm_test.pvalue),
+                    'significant': bool(forearm_test.pvalue < 0.05)
+                }
+            },
+            'smoothness': {
+                'upper_arm': {
+                    'statistic': float(upper_arm_smoothness_test.statistic),
+                    'p_value': float(upper_arm_smoothness_test.pvalue),
+                    'significant': bool(upper_arm_smoothness_test.pvalue < 0.05)
+                },
+                'forearm': {
+                    'statistic': float(forearm_smoothness_test.statistic),
+                    'p_value': float(forearm_smoothness_test.pvalue),
+                    'significant': bool(forearm_smoothness_test.pvalue < 0.05)
+                }
+            }
+        }
+    except Exception as e:
+        print(f"Error in Wilcoxon test: {str(e)}")
+        print(f"Error type: {type(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        wilcoxon_results = {
+            'range_of_motion': {
+                'upper_arm': {
+                    'statistic': 0.0,
+                    'p_value': 1.0,
+                    'significant': False
+                },
+                'forearm': {
+                    'statistic': 0.0,
+                    'p_value': 1.0,
+                    'significant': False
+                }
+            },
+            'smoothness': {
+                'upper_arm': {
+                    'statistic': 0.0,
+                    'p_value': 1.0,
+                    'significant': False
+                },
+                'forearm': {
+                    'statistic': 0.0,
+                    'p_value': 1.0,
+                    'significant': False
+                }
+            }
+        }
+
+    # Determine overall improvement status
+    overall_score = (improvement_scores['range_of_motion']['score'] + improvement_scores['smoothness']['score']) / 2
+    improved = overall_score > 1.0
+
+    # Create the final improvement status with explicit type conversion
+    improvement_status = {
+        'overall_score': float(overall_score),
+        'improved': bool(improved),
         'criteria': {
-            'range_of_motion': improvement_scores['range_of_motion']['score'] > 1.0,
-            'smoothness': improvement_scores['smoothness']['score'] > 1.0
+            'range_of_motion': bool(improvement_scores['range_of_motion']['score'] > 1.0),
+            'smoothness': bool(improvement_scores['smoothness']['score'] > 1.0)
         },
-        'details': improvement_scores
+        'details': {
+            'range_of_motion': {
+                'score': float(improvement_scores['range_of_motion']['score']),
+                'details': {
+                    'upper_arm': float(improvement_scores['range_of_motion']['details']['upper_arm']),
+                    'forearm': float(improvement_scores['range_of_motion']['details']['forearm'])
+                }
+            },
+            'smoothness': {
+                'score': float(improvement_scores['smoothness']['score']),
+                'details': {
+                    'upper_arm': float(improvement_scores['smoothness']['details']['upper_arm']),
+                    'forearm': float(improvement_scores['smoothness']['details']['forearm'])
+                }
+            }
+        },
+        'statistics': wilcoxon_results
     }
+
+    return improvement_status
 
 def save_analysis_results(improvement_status, output_path):
     """Save the analysis results to a JSON file."""
+    # Convert any remaining NumPy types to Python native types
+    def convert_numpy_types(obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.bool_):
+            return bool(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, dict):
+            return {key: convert_numpy_types(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [convert_numpy_types(item) for item in obj]
+        return obj
+
+    # Convert all NumPy types to Python native types
+    improvement_status = convert_numpy_types(improvement_status)
+    
     with open(output_path, 'w') as f:
         json.dump(improvement_status, f, indent=2)
 

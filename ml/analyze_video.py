@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import os
 import json
+import time
 
 def analyze_video(video_path, output_path):
     # Initialize Mediapipe and drawing utilities
@@ -31,16 +32,41 @@ def analyze_video(video_path, output_path):
         print(f"Error: Could not open video: {video_path}")
         sys.exit(1)
 
+    # Get video properties
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    duration = frame_count / fps
+    
+    print(f"Video properties: {fps} FPS, {frame_count} frames, {duration:.2f} seconds")
+    
+    # Adjust frame skip based on video duration
+    if duration > 30:  # For videos longer than 30 seconds
+        frame_skip = 5
+    else:
+        frame_skip = 3
+    
+    print(f"Using frame skip of {frame_skip}")
+    
     # Process the video
     with mp_pose.Pose(
-        model_complexity=2,  # 2 represents the heavy model
+        model_complexity=1,  # Use lighter model
         min_detection_confidence=0.5,
-        min_tracking_confidence=0.5
+        min_tracking_confidence=0.5,
+        enable_segmentation=False  # Disable segmentation for speed
     ) as pose:
+        frame_idx = 0
+        processed_frames = 0
+        start_time = time.time()
+        
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
+                
+            # Skip frames
+            if frame_idx % frame_skip != 0:
+                frame_idx += 1
+                continue
 
             # Convert BGR to RGB
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -65,141 +91,122 @@ def analyze_video(video_path, output_path):
                 pose_data['Wrist_X'].append(landmarks[mp_pose.PoseLandmark.RIGHT_WRIST].x)
                 pose_data['Wrist_Y'].append(landmarks[mp_pose.PoseLandmark.RIGHT_WRIST].y)
                 pose_data['Wrist_Z'].append(landmarks[mp_pose.PoseLandmark.RIGHT_WRIST].z)
+                processed_frames += 1
+            
+            frame_idx += 1
+            
+            # Log progress every 100 frames
+            if frame_idx % 100 == 0:
+                elapsed = time.time() - start_time
+                print(f"Processed {frame_idx}/{frame_count} frames ({frame_idx/frame_count*100:.1f}%) in {elapsed:.1f}s")
 
     cap.release()
+    total_time = time.time() - start_time
+    print(f"Video processing completed in {total_time:.1f}s. Processed {processed_frames} frames.")
 
     # Convert pose data to numpy arrays
     pose_data = {key: np.array(value).tolist() for key, value in pose_data.items()}
 
-    # Save pose data as JSON
+    # Save pose data as JSON with proper type conversion
     json_path = output_path.replace('.png', '.json')
     with open(json_path, 'w') as f:
+        # Convert all numpy types to Python native types
+        def convert_numpy_types(obj):
+            if isinstance(obj, np.integer):
+                return int(obj)
+            elif isinstance(obj, np.floating):
+                return float(obj)
+            elif isinstance(obj, np.bool_):
+                return bool(obj)
+            elif isinstance(obj, np.ndarray):
+                return obj.tolist()
+            elif isinstance(obj, dict):
+                return {key: convert_numpy_types(value) for key, value in obj.items()}
+            elif isinstance(obj, list):
+                return [convert_numpy_types(item) for item in obj]
+            return obj
+
+        # Convert all values to native Python types
+        pose_data = convert_numpy_types(pose_data)
         json.dump(pose_data, f)
 
     # Convert pose data back to numpy arrays for plotting
     pose_data = {key: np.array(value) for key, value in pose_data.items()}
 
     # Extract time and validate
-    time = pose_data['Timestamp']
-    if len(time) < 2:
+    timestamps = pose_data['Timestamp']
+    if len(timestamps) < 2:
         raise ValueError("Insufficient data points for processing after cleaning.")
 
     # Function to compute velocity and acceleration
-    def compute_derivatives(position, time):
-        if len(position) < 2 or len(time) < 2:
+    def compute_derivatives(position, timestamps):
+        if len(position) < 2 or len(timestamps) < 2:
             raise ValueError("Insufficient data points for derivative computation.")
-        velocity = np.gradient(position, time)
-        acceleration = np.gradient(velocity, time)
+        velocity = np.gradient(position, timestamps)
+        acceleration = np.gradient(velocity, timestamps)
         return velocity, acceleration
 
-    # Calculate derivatives for each coordinate
+    # Calculate derivatives only for essential coordinates (Y-axis for vertical movement)
     derivatives = {}
     for joint in ['Shoulder', 'Elbow', 'Wrist']:
-        for axis in ['X', 'Y', 'Z']:
-            pos = pose_data[f'{joint}_{axis}']
-            v, a = compute_derivatives(pos, time)
-            derivatives[f'{joint}_{axis}_Velocity'] = v
-            derivatives[f'{joint}_{axis}_Acceleration'] = a
+        pos = pose_data[f'{joint}_Y']
+        v, a = compute_derivatives(pos, timestamps)
+        derivatives[f'{joint}_Y_Velocity'] = v
+        derivatives[f'{joint}_Y_Acceleration'] = a
 
-    # Create the analysis plot
-    fig = plt.figure(figsize=(15, 15))
+    # Create a simplified analysis plot with only essential data
+    fig = plt.figure(figsize=(8, 8))  # Reduced from 10x10
 
-    # Plot positions for all joints
-    plt.subplot(3, 3, 1)
-    plt.plot(time, pose_data['Shoulder_X'], label='X')
-    plt.plot(time, pose_data['Shoulder_Y'], label='Y')
-    plt.plot(time, pose_data['Shoulder_Z'], label='Z')
-    plt.title('Shoulder Position')
+    # Plot vertical positions
+    plt.subplot(2, 2, 1)
+    plt.plot(timestamps[::2], pose_data['Shoulder_Y'][::2], label='Shoulder', linewidth=1)
+    plt.plot(timestamps[::2], pose_data['Elbow_Y'][::2], label='Elbow', linewidth=1)
+    plt.plot(timestamps[::2], pose_data['Wrist_Y'][::2], label='Wrist', linewidth=1)
+    plt.title('Vertical Position')
     plt.xlabel('Time (s)')
     plt.ylabel('Position')
     plt.legend()
-    plt.grid(True)
+    plt.grid(True, alpha=0.3)  # Reduced grid opacity
 
-    plt.subplot(3, 3, 2)
-    plt.plot(time, pose_data['Elbow_X'], label='X')
-    plt.plot(time, pose_data['Elbow_Y'], label='Y')
-    plt.plot(time, pose_data['Elbow_Z'], label='Z')
-    plt.title('Elbow Position')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Position')
-    plt.legend()
-    plt.grid(True)
-
-    plt.subplot(3, 3, 3)
-    plt.plot(time, pose_data['Wrist_X'], label='X')
-    plt.plot(time, pose_data['Wrist_Y'], label='Y')
-    plt.plot(time, pose_data['Wrist_Z'], label='Z')
-    plt.title('Wrist Position')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Position')
-    plt.legend()
-    plt.grid(True)
-
-    # Plot velocities for all joints
-    plt.subplot(3, 3, 4)
-    plt.plot(time, derivatives['Shoulder_X_Velocity'], label='X')
-    plt.plot(time, derivatives['Shoulder_Y_Velocity'], label='Y')
-    plt.plot(time, derivatives['Shoulder_Z_Velocity'], label='Z')
-    plt.title('Shoulder Velocity')
+    # Plot vertical velocities
+    plt.subplot(2, 2, 2)
+    plt.plot(timestamps[::2], derivatives['Shoulder_Y_Velocity'][::2], label='Shoulder', linewidth=1)
+    plt.plot(timestamps[::2], derivatives['Elbow_Y_Velocity'][::2], label='Elbow', linewidth=1)
+    plt.plot(timestamps[::2], derivatives['Wrist_Y_Velocity'][::2], label='Wrist', linewidth=1)
+    plt.title('Vertical Velocity')
     plt.xlabel('Time (s)')
     plt.ylabel('Velocity')
     plt.legend()
-    plt.grid(True)
+    plt.grid(True, alpha=0.3)
 
-    plt.subplot(3, 3, 5)
-    plt.plot(time, derivatives['Elbow_X_Velocity'], label='X')
-    plt.plot(time, derivatives['Elbow_Y_Velocity'], label='Y')
-    plt.plot(time, derivatives['Elbow_Z_Velocity'], label='Z')
-    plt.title('Elbow Velocity')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Velocity')
-    plt.legend()
-    plt.grid(True)
-
-    plt.subplot(3, 3, 6)
-    plt.plot(time, derivatives['Wrist_X_Velocity'], label='X')
-    plt.plot(time, derivatives['Wrist_Y_Velocity'], label='Y')
-    plt.plot(time, derivatives['Wrist_Z_Velocity'], label='Z')
-    plt.title('Wrist Velocity')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Velocity')
-    plt.legend()
-    plt.grid(True)
-
-    # Plot accelerations for all joints
-    plt.subplot(3, 3, 7)
-    plt.plot(time, derivatives['Shoulder_X_Acceleration'], label='X')
-    plt.plot(time, derivatives['Shoulder_Y_Acceleration'], label='Y')
-    plt.plot(time, derivatives['Shoulder_Z_Acceleration'], label='Z')
-    plt.title('Shoulder Acceleration')
+    # Plot vertical accelerations
+    plt.subplot(2, 2, 3)
+    plt.plot(timestamps[::2], derivatives['Shoulder_Y_Acceleration'][::2], label='Shoulder', linewidth=1)
+    plt.plot(timestamps[::2], derivatives['Elbow_Y_Acceleration'][::2], label='Elbow', linewidth=1)
+    plt.plot(timestamps[::2], derivatives['Wrist_Y_Acceleration'][::2], label='Wrist', linewidth=1)
+    plt.title('Vertical Acceleration')
     plt.xlabel('Time (s)')
     plt.ylabel('Acceleration')
     plt.legend()
-    plt.grid(True)
+    plt.grid(True, alpha=0.3)
 
-    plt.subplot(3, 3, 8)
-    plt.plot(time, derivatives['Elbow_X_Acceleration'], label='X')
-    plt.plot(time, derivatives['Elbow_Y_Acceleration'], label='Y')
-    plt.plot(time, derivatives['Elbow_Z_Acceleration'], label='Z')
-    plt.title('Elbow Acceleration')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Acceleration')
-    plt.legend()
-    plt.grid(True)
+    # Plot 3D trajectory with reduced points
+    ax = fig.add_subplot(2, 2, 4, projection='3d')
+    ax.plot(pose_data['Shoulder_X'][::4], pose_data['Shoulder_Y'][::4], pose_data['Shoulder_Z'][::4], 
+            label='Shoulder', linewidth=1)
+    ax.plot(pose_data['Elbow_X'][::4], pose_data['Elbow_Y'][::4], pose_data['Elbow_Z'][::4], 
+            label='Elbow', linewidth=1)
+    ax.plot(pose_data['Wrist_X'][::4], pose_data['Wrist_Y'][::4], pose_data['Wrist_Z'][::4], 
+            label='Wrist', linewidth=1)
+    ax.set_title('3D Trajectory')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.legend()
 
-    plt.subplot(3, 3, 9)
-    plt.plot(time, derivatives['Wrist_X_Acceleration'], label='X')
-    plt.plot(time, derivatives['Wrist_Y_Acceleration'], label='Y')
-    plt.plot(time, derivatives['Wrist_Z_Acceleration'], label='Z')
-    plt.title('Wrist Acceleration')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Acceleration')
-    plt.legend()
-    plt.grid(True)
-
-    # Save the plot
+    # Save the plot with reduced DPI and simplified style
     plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.savefig(output_path, dpi=80, bbox_inches='tight')  # Reduced DPI from 100 to 80
     plt.close()
 
     # Verify the output files exist

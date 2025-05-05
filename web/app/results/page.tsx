@@ -33,6 +33,32 @@ interface ImprovementStatus {
       };
     };
   };
+  statistics: {
+    range_of_motion: {
+      upper_arm: {
+        statistic: number;
+        p_value: number;
+        significant: boolean;
+      };
+      forearm: {
+        statistic: number;
+        p_value: number;
+        significant: boolean;
+      };
+    };
+    smoothness: {
+      upper_arm: {
+        statistic: number;
+        p_value: number;
+        significant: boolean;
+      };
+      forearm: {
+        statistic: number;
+        p_value: number;
+        significant: boolean;
+      };
+    };
+  };
 }
 
 export default function Results() {
@@ -67,6 +93,11 @@ export default function Results() {
           throw new Error('Failed to fetch improvement analysis')
         }
         const improvementData = await improvementResponse.json()
+        console.log('Raw improvement data:', JSON.stringify(improvementData, null, 2))
+        console.log('Data keys:', Object.keys(improvementData))
+        console.log('Statistics keys:', Object.keys(improvementData.statistics || {}))
+        console.log('Range of motion keys:', Object.keys(improvementData.statistics?.range_of_motion || {}))
+        console.log('Smoothness keys:', Object.keys(improvementData.statistics?.smoothness || {}))
         setImprovementStatus(improvementData)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
@@ -77,6 +108,21 @@ export default function Results() {
 
     fetchResults()
   }, [searchParams])
+
+  // Add debug logging for the rendered values
+  useEffect(() => {
+    if (improvementStatus) {
+      console.log('Current improvement status:', improvementStatus)
+      console.log('Range of motion p-values:', {
+        upper_arm: improvementStatus.statistics?.range_of_motion?.upper_arm?.p_value,
+        forearm: improvementStatus.statistics?.range_of_motion?.forearm?.p_value
+      })
+      console.log('Smoothness p-values:', {
+        upper_arm: improvementStatus.statistics?.smoothness?.upper_arm?.p_value,
+        forearm: improvementStatus.statistics?.smoothness?.forearm?.p_value
+      })
+    }
+  }, [improvementStatus])
 
   if (loading) {
     return (
@@ -138,15 +184,15 @@ export default function Results() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Range of Motion */}
           <div className={`p-4 rounded-lg shadow-sm ${
-            improvementStatus.criteria.range_of_motion 
+            improvementStatus?.criteria?.range_of_motion 
               ? 'bg-green-50 border border-green-200' 
               : 'bg-red-50 border border-red-200'
           }`}>
             <h3 className="font-medium text-gray-900 mb-2">Range of Motion</h3>
             <div className="flex items-center mb-2">
-              <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus.criteria.range_of_motion ? 'bg-green-500' : 'bg-red-500'}`} />
+              <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus?.criteria?.range_of_motion ? 'bg-green-500' : 'bg-red-500'}`} />
               <span className="text-sm text-gray-600">
-                {((improvementStatus.details.range_of_motion.score - 1) * 100).toFixed(1)}% {improvementStatus.criteria.range_of_motion ? 'improvement' : 'degradation'}
+                {((improvementStatus?.details?.range_of_motion?.score - 1) * 100).toFixed(1)}% {improvementStatus?.criteria?.range_of_motion ? 'improvement' : 'degradation'}
               </span>
             </div>
             <div className="text-xs text-gray-500">
@@ -154,13 +200,19 @@ export default function Results() {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Upper Arm Movement</span>
                   <span className="font-medium">
-                    {((improvementStatus.details.range_of_motion.details.upper_arm - 1) * 100).toFixed(1)}%
+                    {((improvementStatus?.details?.range_of_motion?.details?.upper_arm - 1) * 100).toFixed(1)}%
+                    <span className={`ml-2 text-xs ${improvementStatus?.statistics?.range_of_motion?.upper_arm?.significant ? 'text-green-600' : 'text-gray-400'}`}>
+                      (p = {improvementStatus?.statistics?.range_of_motion?.upper_arm?.p_value?.toFixed(3) ?? 'N/A'})
+                    </span>
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Forearm Movement</span>
                   <span className="font-medium">
-                    {((improvementStatus.details.range_of_motion.details.forearm - 1) * 100).toFixed(1)}%
+                    {((improvementStatus?.details?.range_of_motion?.details?.forearm - 1) * 100).toFixed(1)}%
+                    <span className={`ml-2 text-xs ${improvementStatus?.statistics?.range_of_motion?.forearm?.significant ? 'text-green-600' : 'text-gray-400'}`}>
+                      (p = {improvementStatus?.statistics?.range_of_motion?.forearm?.p_value?.toFixed(3) ?? 'N/A'})
+                    </span>
                   </span>
                 </div>
               </div>
@@ -169,15 +221,15 @@ export default function Results() {
 
           {/* Movement Smoothness */}
           <div className={`p-4 rounded-lg shadow-sm ${
-            improvementStatus.criteria.smoothness 
+            improvementStatus?.criteria?.smoothness 
               ? 'bg-green-50 border border-green-200' 
               : 'bg-red-50 border border-red-200'
           }`}>
             <h3 className="font-medium text-gray-900 mb-2">Movement Smoothness</h3>
             <div className="flex items-center mb-2">
-              <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus.criteria.smoothness ? 'bg-green-500' : 'bg-red-500'}`} />
+              <div className={`w-2 h-2 rounded-full mr-2 ${improvementStatus?.criteria?.smoothness ? 'bg-green-500' : 'bg-red-500'}`} />
               <span className="text-sm text-gray-600">
-                {((improvementStatus.details.smoothness.score - 1) * 100).toFixed(1)}% {improvementStatus.criteria.smoothness ? 'improvement' : 'degradation'}
+                {((improvementStatus?.details?.smoothness?.score - 1) * 100).toFixed(1)}% {improvementStatus?.criteria?.smoothness ? 'improvement' : 'degradation'}
               </span>
             </div>
             <div className="text-xs text-gray-500">
@@ -185,19 +237,32 @@ export default function Results() {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Upper Arm Smoothness</span>
                   <span className="font-medium">
-                    {((improvementStatus.details.smoothness.details.upper_arm - 1) * 100).toFixed(1)}%
+                    {((improvementStatus?.details?.smoothness?.details?.upper_arm - 1) * 100).toFixed(1)}%
+                    <span className={`ml-2 text-xs ${improvementStatus?.statistics?.smoothness?.upper_arm?.significant ? 'text-green-600' : 'text-gray-400'}`}>
+                      (p = {improvementStatus?.statistics?.smoothness?.upper_arm?.p_value?.toFixed(3) ?? 'N/A'})
+                    </span>
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Forearm Smoothness</span>
                   <span className="font-medium">
-                    {((improvementStatus.details.smoothness.details.forearm - 1) * 100).toFixed(1)}%
+                    {((improvementStatus?.details?.smoothness?.details?.forearm - 1) * 100).toFixed(1)}%
+                    <span className={`ml-2 text-xs ${improvementStatus?.statistics?.smoothness?.forearm?.significant ? 'text-green-600' : 'text-gray-400'}`}>
+                      (p = {improvementStatus?.statistics?.smoothness?.forearm?.p_value?.toFixed(3) ?? 'N/A'})
+                    </span>
                   </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Statistical Significance Legend */}
+      <div className="w-full max-w-6xl mb-8 text-sm text-gray-600">
+        <p className="text-center">
+          <span className="text-green-600">Green p-values</span> indicate statistically significant improvements (p &lt; 0.05)
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl w-full">
