@@ -1,0 +1,48 @@
+{
+  "criteria": {
+    "range_of_motion": true,
+    "smoothness": true
+  },
+  "details": {
+    "range_of_motion": {
+      "score": 1.1809615690894806,
+      "details": {
+        "upper_arm": 1.0379024345638026,
+        "forearm": 1.346958213740591
+      }
+    },
+    "smoothness": {
+      "score": 2.217726099354285,
+      "details": {
+        "upper_arm": 2.2006229914038924,
+        "forearm": 2.2315968441355842
+      }
+    }
+  },
+  "statistics": {
+    "range_of_motion": {
+      "upper_arm": {
+        "statistic": null,
+        "p_value": null,
+        "significant": false
+      },
+      "forearm": {
+        "statistic": null,
+        "p_value": null,
+        "significant": false
+      }
+    },
+    "smoothness": {
+      "upper_arm": {
+        "statistic": null,
+        "p_value": null,
+        "significant": false
+      },
+      "forearm": {
+        "statistic": null,
+        "p_value": null,
+        "significant": false
+      }
+    }
+  }
+}

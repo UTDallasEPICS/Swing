@@ -18,7 +18,7 @@ export default function Home() {
 
   //Responsive size added to adjust for mobile/tablet
   return (
-    <main className="flex flex-col items-center min-h-screen bg-white p-4">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
       {/* Header Section */}
       <div className="text-black flex flex-col items-center text-center pt-20 pb-12">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -30,8 +30,8 @@ export default function Home() {
       </div>
 
       {/* Instructions Section */}
-      <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Instructions for Video Recording</h2>
+      <div className="bg-gray-100 p-6 rounded-lg max-w-2xl mb-8">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Instructions for Video Recording</h2>
         <ul className="list-disc list-inside space-y-2 text-gray-600">
           <li>Ensure the patient is standing in a well-lit area</li>
           <li>Record the patient's arm swing from a side view</li>
@@ -44,8 +44,8 @@ export default function Home() {
       {/* Upload Button */}
       <div className="flex flex-col justify-center items-center mt-5">
         <Link href="/videoUpload">
-          <button className="px-8 py-4 bg-blue-600 text-white rounded-lg 
-            cursor-pointer text-lg font-semibold transition duration-300 hover:bg-blue-700
+          <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
+            cursor-pointer text-lg font-semibold transition duration-300
             shadow-lg hover:shadow-xl flex items-center gap-2">
             <span>Upload Patient Videos</span>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
