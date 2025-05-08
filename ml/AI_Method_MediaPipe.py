@@ -110,7 +110,7 @@ while cap.isOpened():
 
                 
                 #TODO: Does not recognize anamolies
-                """
+                
                 elif anomaly_method.lower() == "KNN":
                     print("Using KNN")
                     # Fit KNN on the data
@@ -141,7 +141,6 @@ while cap.isOpened():
                     
                     #anomaly = kmeans.predict([angle])
                     #print(anomaly)
-                """
 
                 if anomaly_method.lower() == "DecTree":
                     print("Using Decision Tree")
