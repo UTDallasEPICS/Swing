@@ -2,7 +2,7 @@
 
 This is the beginning of the SwingAI Project! 
 
-Conceptual overview
+## Conceptual overview
 
 This project aims to develop an AI-powered web application to assist in tracking and analyzing Unilateral Cerebral Palsy (UCP) in pediatric patients before and after botox treatment. The application provides a more advanced and objective method for assessing UCP conditions compared to traditional physical marker-based approaches.
 
