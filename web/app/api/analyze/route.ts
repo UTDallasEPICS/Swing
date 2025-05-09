@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     // Get the project root directory (go up three levels from web/app/api/analyze)
-    const projectRoot = path.resolve(process.cwd(), '..', '..', '..', 'UpdatedSwing', 'Swing');
+    const projectRoot = path.resolve(process.cwd(), '..', '..', '..', 'SWINGAIMEDIAPIPE', 'Swing');
     console.log('Project root:', projectRoot);
 
     // Create temporary directory for processing
