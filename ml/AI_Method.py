@@ -16,7 +16,7 @@ from sklearn import tree
 
 # User selects which arm(s) to track
 arm_selection = input("Select arm tracking mode ('left', 'right', 'both'): ").strip().lower()
-anomaly_method = input("Select anomaly detection method ('StdDev, 'IsoFor', 'KMeans', DecTree): ").strip().lower()
+anomaly_method = input("Select anomaly detection method ('StdDev, 'IsoFor', 'KMeans', 'KNN', 'KReg', 'DecTree'): ").strip().lower()
 
 # Initialize Mediapipe and drawing utilities
 mp_pose = mp.solutions.pose
@@ -113,13 +113,8 @@ while cap.isOpened():
                 
                 elif anomaly_method.lower() == "KNN":
                     print("Using KNN")
-                    # Fit KNN on the data
-        
-                    # Calculate distances to the nearest neighbors
                     distances = knn.kneighbors([[angle]]).fit(X, np.zeros(len(X)))
-                    max_distance = np.max(distances)  # Maximum distance to the nearest neighbors
-        
-                    # Define a threshold for anomalies (e.g., based on the 95th percentile of distances)
+                    max_distance = np.max(distances) 
                     threshold = np.percentile(distances, 95) or np.percentile(distances, 15)
                     anomaly = knn.predict([[angle]])[0] > threshold
                 
@@ -132,22 +127,13 @@ while cap.isOpened():
                 if anomaly_method.lower() == "KMeans":
                     print("Using KMeans")
                     kmeans.fit(X)
-
-                    # Predict the cluster for the current angle
                     cluster = kmeans.predict([angle_data[arm]])[0] == -1
-     
                     print("Cluster: ", cluster)
-                    # Check if the angle is far from the cluster cent
-                    
-                    #anomaly = kmeans.predict([angle])
-                    #print(anomaly)
 
                 if anomaly_method.lower() == "DecTree":
                     print("Using Decision Tree")
                     kmeans.fit(X, y=["True, not True"])
-
                     pred = DecTree.predict([angle_data[arm]])
-     
                     print("Prediction: ", pred)
                     
 
