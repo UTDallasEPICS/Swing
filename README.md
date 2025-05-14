@@ -21,69 +21,69 @@ Manage patient records and video uploads
 
 ## Functional Requirements
 
-Login Page
+### Login Page
 
 Secure authentication through hospital's system
 Restricted access for authorized personnel only
 
-Homepage
+### Homepage
 
 Simple interface
 Button to navigate to video upload page
 
-Video Upload Page
+### Video Upload Page
 
 Upload up to 2 patient videos
 Support for video file processing
 Display processing animation during analysis
 
-Results Page
+### Results Page
 
 Display AI-generated analysis
 Graphical representation of arm movement angles
 Detailed insights into patient's UCP condition
 
-Tech Stack
+## Tech Stack
 
-Web Application
+### Web Application
 
 Frontend Framework: Next.js
 Backend: Next.js (integrated backend)
 Authentication: Hospital's authentication system (to be implemented)
 
-AI Model
+### AI Model
 
 AI Library: MediaPipe
 Video Analysis: Custom AI model for body point mapping and angle tracking
 
-Cloud
+### Cloud
 
 Cloud Provider: Amazon Web Services (AWS)
 Storage: S3 Bucket
 Queuing: SQS
 Compute: Lambda Functions
 
-Migration Scripts
+### Migration Scripts
 
 No existing data migration required at this stage
 
-Development Environment Setup
-Prerequisites
+## Development Environment Setup
+### Prerequisites
 
 Ensure Node.js is installed
 Docker (optional)
 AWS CLI configured with appropriate credentials
 
-Database Initialization
+### Database Initialization
 
 No local database setup required (uses AWS services)
 
-Authentication Setup
+### Authentication Setup
 
 Coordinate with hospital IT for authentication integration
 Implement Auth0 or similar service in future iterations
 
-Starting Project
+## Starting Project
 
 1. Clone the repository:
 
