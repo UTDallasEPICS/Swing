@@ -1,4 +1,4 @@
-## SwingAI
+# SwingAI
 
 This is the beginning of the SwingAI Project! 
 
@@ -8,13 +8,13 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 ## User Roles
 
-# Doctors/Medical Professionals:
+### Doctors/Medical Professionals:
 
 Upload patient videos
 View AI-generated analysis of arm movement
 Access graphs of patient conditions
 
-# Authorized Hospital Staff:
+### Authorized Hospital Staff:
 
 Log in through secure hospital authentication system
 Manage patient records and video uploads
