@@ -10,14 +10,14 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 ### Doctors/Medical Professionals:
 
-Upload patient videos
-View AI-generated analysis of arm movement
-Access graphs of patient conditions
+- Upload patient videos
+- View AI-generated analysis of arm movement
+- Access graphs of patient conditions
 
 ### Authorized Hospital Staff:
 
-Log in through secure hospital authentication system
-Manage patient records and video uploads
+- Log in through secure hospital authentication system
+- Manage patient records and video uploads
 
 ## Functional Requirements
 
