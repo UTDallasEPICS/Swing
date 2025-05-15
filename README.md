@@ -75,7 +75,7 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 - Ensure Node.js is installed
 - Ensure Python 3.12 is installed
-- Docker (optional)
+- Docker (Optional, not implemented yet)
 - AWS CLI configured with appropriate credentials (Optional, not implemented yet)
 
 ### Database Initialization
