@@ -49,12 +49,15 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 - Frontend Framework: [Next.js](https://nextjs.org/)
 - Backend: [Next.js](https://nextjs.org/) (integrated backend)
-- Authentication: Hospital's authentication system (to be implemented)
+- Authentication: [Magic Link](https://magic.link/docs/home/welcome) (Temporary)
+  - Hospital's authentication system (to be implemented)
 
 ### AI Model (Not implemented yet)
 
-- AI Library: MediaPipe/SciKit-Learn
-- Video Analysis: Custom AI model for body point mapping and angle tracking using Scikit-Learn
+- Video Tracking: [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/guide)
+- ML models: [SciKit-Learn](https://scikit-learn.org/stable/)
+- Graphing: [Numpy](https://numpy.org/)
+- Other ML/Data Analytic tools: [Pandas](https://pandas.pydata.org/)
 
 ### Cloud (Not implemented yet)
 
