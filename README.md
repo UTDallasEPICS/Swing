@@ -36,6 +36,8 @@ This project aims to develop an AI-powered web application to assist in tracking
 - Upload up to 2 patient videos
 - Support for video file processing
 - Display processing animation during analysis
+- Option of using different AI models for analysis
+- Accurate AI analysis
 
 ### Results Page
 
