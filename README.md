@@ -54,7 +54,7 @@ This project aims to develop an AI-powered web application to assist in tracking
 ### AI Model (Not implemented yet)
 
 - AI Library: MediaPipe/SciKit-Learn
-- Video Analysis: Custom AI model for body point mapping and angle tracking
+- Video Analysis: Custom AI model for body point mapping and angle tracking using Scikit-Learn
 
 ### Cloud (Not implemented yet)
 
@@ -73,11 +73,11 @@ This project aims to develop an AI-powered web application to assist in tracking
 - Ensure Node.js is installed
 - Ensure Python 3.12 is installed
 - Docker (optional)
-- AWS CLI configured with appropriate credentials
+- AWS CLI configured with appropriate credentials (Optional, not implemented yet)
 
 ### Database Initialization
 
-- No local database setup required (uses AWS services)
+- No local database setup required (no database implemented yet)
 
 ### Authentication Setup
 
@@ -140,9 +140,8 @@ This project aims to develop an AI-powered web application to assist in tracking
   Python [pythonfile]
   ```
 
-## Future Instructions
-
-3. AWS configurations
+## Future Instructions (If AWS is implemented)
+AWS configurations
 - Use AWS Managment Console
 - Login as root email/user
 - Need MFA which is already configured
