@@ -47,8 +47,8 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 ### Web Application
 
-- Frontend Framework: Next.js
-- Backend: Next.js (integrated backend)
+- Frontend Framework: [Next.js](https://nextjs.org/)
+- Backend: [Next.js](https://nextjs.org/) (integrated backend)
 - Authentication: Hospital's authentication system (to be implemented)
 
 ### AI Model (Not implemented yet)
