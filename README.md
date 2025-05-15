@@ -87,14 +87,25 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 1. Clone the repository:
 
-git clone https://github.com/UTDallasEPICS/Swing.git
-cd web
+  git clone https://github.com/UTDallasEPICS/Swing.git
 
 2. Install dependencies:
-npm install
+  ```bash
+  # npm [Default, use this unless told otherwise]
+  npm install
+
+  # pnpm
+  pnpm install
+
+  # yarn
+  yarn install
+
+  # bun
+  bun install
+  ```
 
 3. AWS configurations
-Use AWS Managment Console
+  Use AWS Managment Console
 Login as root email/user
 Need MFA which is already configured
 Go into "Users"
