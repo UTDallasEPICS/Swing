@@ -71,6 +71,7 @@ This project aims to develop an AI-powered web application to assist in tracking
 ### Prerequisites
 
 - Ensure Node.js is installed
+- Ensure Python 3.12 is installed
 - Docker (optional)
 - AWS CLI configured with appropriate credentials
 
@@ -84,7 +85,7 @@ This project aims to develop an AI-powered web application to assist in tracking
 - Implement Auth0 or similar service in future iterations
 
 ## Starting Project
-
+### Running Front-End
 1. Clone the repository:
   ```bash
   git clone https://github.com/UTDallasEPICS/Swing.git
@@ -92,7 +93,7 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 2. Install dependencies:
   ```bash
-  # npm [Default, use this unless told otherwise]
+  # npm
   npm install
 
   # pnpm
@@ -107,18 +108,37 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 4. Run the development server
   ```bash
-# npm [Default, use this unless told otherwise]
-npm run dev
+  # npm
+  npm run dev
 
-# pnpm
-pnpm run dev
+  # pnpm
+  pnpm run dev
 
-# yarn
-yarn dev
+  # yarn
+  yarn dev
 
-# bun
-bun run dev
-```
+  # bun
+  bun run dev
+  ```
+### Running ML currently
+1. Clone the repository:
+  ```bash
+  git clone https://github.com/UTDallasEPICS/Swing.git
+  ```
+
+2. Change directory to ml folder
+  ```bash
+  cd ml
+  ```
+
+3. Run AI_Method.py or other .py files in the folder
+  ```bash
+  # Running AI_Method.py
+  Python AI_Method.py
+
+  # General template
+  Python [pythonfile]
+  ```
 
 ## Future Instructions
 
