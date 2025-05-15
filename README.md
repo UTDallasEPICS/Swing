@@ -86,8 +86,9 @@ This project aims to develop an AI-powered web application to assist in tracking
 ## Starting Project
 
 1. Clone the repository:
-
+  ```bash
   git clone https://github.com/UTDallasEPICS/Swing.git
+  ```
 
 2. Install dependencies:
   ```bash
@@ -104,12 +105,26 @@ This project aims to develop an AI-powered web application to assist in tracking
   bun install
   ```
 
-3. AWS configurations
-  Use AWS Managment Console
-Login as root email/user
-Need MFA which is already configured
-Go into "Users"
-Click create "Access Key" for user (This creates access keys for users)
-
-5. Run the development server
+4. Run the development server
+  ```bash
+# npm [Default, use this unless told otherwise]
 npm run dev
+
+# pnpm
+pnpm run dev
+
+# yarn
+yarn dev
+
+# bun
+bun run dev
+```
+
+## Future Instructions
+
+3. AWS configurations
+- Use AWS Managment Console
+- Login as root email/user
+- Need MFA which is already configured
+- Go into "Users"
+- Click create "Access Key" for user (This creates access keys for users)
