@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neighbors import KNeighborsRegressor 
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.cluster import KMeans
 from sklearn import tree
 
@@ -27,7 +27,7 @@ angle_data = {"right": [], "left": []}
 timestamp_data = {"right": [], "left": []}
 anomaly_flags = {"right": [], "left": []}
 
-video_path = (r"C:\Users\admin\Desktop\SWINGAIMediaPipe\Swing\Videos\IMG_2699.mov")  # VIDEO SOURCE (CHANGE THIS)
+video_path = "../Videos/DemoBefore.mp4"  # VIDEO SOURCE (CHANGE THIS)
 cap = cv.VideoCapture(video_path)
 
 if not cap.isOpened():
