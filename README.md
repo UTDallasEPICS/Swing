@@ -76,7 +76,7 @@ This project aims to develop an AI-powered web application to assist in tracking
 ### Prerequisites
 
 - Ensure Node.js is installed
-- Ensure Python 3.12 is installed
+- Ensure Python 3.10 is installed
 - Docker (Optional, not implemented yet)
 - AWS CLI configured with appropriate credentials (Optional, not implemented yet)
 
@@ -149,12 +149,17 @@ This project aims to develop an AI-powered web application to assist in tracking
 4. Run AI_Method.py or other .py files in the folder
   ```bash
   # Running AI_Method.py
-  Python AI_Method.py
+  python AI_Method.py
 
   # General template
-  Python [pythonfile]
+  python [pythonfile]
   ```
-
+## For Mac, create a virtual environment for python if needed
+```bash
+cd ml
+pathname -m venv .venv
+source .venv/bin/activate
+```
 ## Future Instructions (If AWS is implemented)
 AWS configurations
 - Use AWS Managment Console
