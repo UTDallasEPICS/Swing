@@ -96,7 +96,12 @@ This project aims to develop an AI-powered web application to assist in tracking
   git clone https://github.com/UTDallasEPICS/Swing.git
   ```
 
-2. Install dependencies:
+2. Change directory to web folder
+  ```bash
+  cd web
+  ```
+
+3. Install dependencies:
   ```bash
   # npm
   npm install
@@ -136,7 +141,12 @@ This project aims to develop an AI-powered web application to assist in tracking
   cd ml
   ```
 
-3. Run AI_Method.py or other .py files in the folder
+3. Install dependencies
+  ```bash
+    pip install -r requirements.txt
+  ```
+
+4. Run AI_Method.py or other .py files in the folder
   ```bash
   # Running AI_Method.py
   Python AI_Method.py
