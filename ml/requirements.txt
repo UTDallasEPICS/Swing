@@ -1,5 +1,7 @@
-numpy>=1.21.0
+numpy>=1.21.0, <2
 scikit-learn>=1.0.0
 opencv-python>=4.5.0
-mediapipe>=0.8.0
+# MediaPipe wheels are most stable on Python 3.10 across OSes
+mediapipe==0.10.14; python_version == "3.10"
 matplotlib>=3.4.0 
+protobuf>=4.25.3,<5 #if needed
