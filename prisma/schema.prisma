@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" 
+  url = "file:./dev.db"
+}
+
+
+model Patient {
+  id    Int     @id @default(autoincrement())
+  dob   DateTime? 
+  name  String? 
+
+  results Result[] 
+}
+
+
+model Analysis {
+  analysis_id           Int     @id @default(autoincrement())
+  video                 String?
+  graphs                String?
+  range_of_motion       Float?
+  Upper_arm_movement    Float?
+  Forearm_movement      Float?
+  Smoothness            Float?
+  Upper_arm_smoothness  Float?
+  Forearm_smoothness    Float?
+
+  result_before Result[] @relation("BeforeAnalysis")
+  result_after  Result[] @relation("AfterAnalysis")
+}
+
+model Result {
+  result_id                        Int     @id @default(autoincrement())
+  type_of_treatment                String?
+  percent_change_range_of_motion   Float?
+  ROM_pValue                       Float?
+  percent_change_of_smoothness     Float?
+  Smoothness_pValue                Float?
+
+  patient_id Int?
+  patient    Patient? @relation(fields: [patient_id], references: [id])
+
+  before_analysis_id Int?     @unique 
+  before_analysis    Analysis? @relation("BeforeAnalysis", fields: [before_analysis_id], references: [analysis_id])
+
+  after_analysis_id Int?      @unique 
+  after_analysis    Analysis? @relation("AfterAnalysis", fields: [after_analysis_id], references: [analysis_id])
+}
