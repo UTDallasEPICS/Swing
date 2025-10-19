@@ -11,41 +11,40 @@ datasource db {
 model Patient {
   id    Int     @id @default(autoincrement())
   dob   DateTime? 
-  name  String? 
+  name  String @default("")
 
-  results Result[] 
+  Results TreatmentResult[] 
 }
 
-
-model Analysis {
-  analysis_id           Int     @id @default(autoincrement())
+model VideoAnalysis {
+  id           Int     @id @default(autoincrement())
   video                 String?
-  graphs                String?
+  graph_data              Json?
   range_of_motion       Float?
-  Upper_arm_movement    Float?
-  Forearm_movement      Float?
-  Smoothness            Float?
-  Upper_arm_smoothness  Float?
-  Forearm_smoothness    Float?
+  upper_arm_movement    Float?
+  forearm_movement      Float?
+  smoothness            Float?
+  upper_arm_smoothness  Float?
+  forearm_smoothness    Float?
 
-  result_before Result[] @relation("BeforeAnalysis")
-  result_after  Result[] @relation("AfterAnalysis")
+  ResultBefore TreatmentResult? @relation("BeforeAnalysis")
+  ResultAfter  TreatmentResult? @relation("AfterAnalysis")
 }
 
-model Result {
-  result_id                        Int     @id @default(autoincrement())
+model TreatmentResult {
+  id                        Int     @id @default(autoincrement())
   type_of_treatment                String?
   percent_change_range_of_motion   Float?
-  ROM_pValue                       Float?
+  rom_p_value                       Float?
   percent_change_of_smoothness     Float?
-  Smoothness_pValue                Float?
+  smoothness_p_value                Float?
 
   patient_id Int?
-  patient    Patient? @relation(fields: [patient_id], references: [id])
+  Patient    Patient? @relation(fields: [patient_id], references: [id])
 
-  before_analysis_id Int?     @unique 
-  before_analysis    Analysis? @relation("BeforeAnalysis", fields: [before_analysis_id], references: [analysis_id])
+  before_analysis_id Int     @unique 
+  BeforeAnalysis    VideoAnalysis @relation("BeforeAnalysis", fields: [before_analysis_id], references: [id])
 
-  after_analysis_id Int?      @unique 
-  after_analysis    Analysis? @relation("AfterAnalysis", fields: [after_analysis_id], references: [analysis_id])
+  after_analysis_id Int      @unique 
+  AfterAnalysis    VideoAnalysis @relation("AfterAnalysis", fields: [after_analysis_id], references: [id])
 }
