@@ -7,7 +7,6 @@
   min-height: 100vh;
   padding: 2rem;
   background-color: #ffffff;
-
 }
 
 .title {
@@ -210,7 +209,6 @@
 .fileInputLabel:hover {
   background-color: #2980b9;
 }
-
 
 /* Responsive styles */
 @media (max-width: 768px) {
