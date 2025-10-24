@@ -1,8 +1,8 @@
 "use client";
-import { useEffect } from 'react';
-import { redirect } from 'next/navigation';
-//import Cookies from 'js-cookie'; 
-import Link from 'next/link';
+import { useEffect } from "react";
+import { redirect } from "next/navigation";
+//import Cookies from 'js-cookie';
+import Link from "next/link";
 
 export default function InstructionPage() {
   /*useEffect(() => {
@@ -25,13 +25,16 @@ export default function InstructionPage() {
           Cerebral Palsy Arm Swing Analysis
         </h1>
         <p className="text-lg sm:text-xl text-gray-600 max-w-2xl">
-          Upload before and after videos of your patient's arm swing to analyze improvement in unilateral cerebral palsy
+          Upload before and after videos of your patient's arm swing to analyze
+          improvement in unilateral cerebral palsy
         </p>
       </div>
 
       {/* Instructions Section */}
       <div className="bg-gray-100 p-6 rounded-lg max-w-2xl mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Instructions for Video Recording</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+          Instructions for Video Recording
+        </h2>
         <ul className="list-disc list-inside space-y-2 text-gray-600">
           <li>Ensure the patient is standing in a well-lit area</li>
           <li>Record the patient's arm swing from a side view</li>
@@ -44,12 +47,23 @@ export default function InstructionPage() {
       {/* Upload Button */}
       <div className="flex flex-col justify-center items-center mt-5">
         <Link href="/videoUpload">
-          <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
+          <button
+            className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
             cursor-pointer text-lg font-semibold transition duration-300
-            shadow-lg hover:shadow-xl flex items-center gap-2">
+            shadow-lg hover:shadow-xl flex items-center gap-2"
+          >
             <span>Upload Patient Videos</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
             </svg>
           </button>
         </Link>

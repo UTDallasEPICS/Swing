@@ -65,6 +65,9 @@ export default function Home(){
                 setSelectedItems(patientData.map(item => item.id))
             }
         }
+        const filteredPatients = patientData.filter(patient =>
+        patient.patientName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     return (
         <main className="flex flex-col items-center min-h-screen bg-white w-full p-4">
             <div className="fixed top-5 left-5 w-[40vw] sm:w-[30vw] md:w-[25vw] max-w-[500px] z-50">
@@ -78,9 +81,10 @@ export default function Home(){
                 priority
                 />
             </div>
+
             <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-24 mt-12">
                 {/*header section*/}
-                <div className="flex iterms-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-6">
                     <h1 className="text-3xl text-black border-0 focus:outline-none">Patient Profile</h1>
                     {/*search bar */}
                     <div className="flex-1 max-w-md mx-8">
@@ -92,7 +96,7 @@ export default function Home(){
                             className = "w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    {/*buttons*/}
+                    {/* add patient button*/}
                     <div className="flex gap-3">
                         <button className="px-6 py-2 bg-black border-0 focus:outline-none text-white rounded hover:bg-black transition-colors">
                             Add Patient
@@ -112,7 +116,7 @@ export default function Home(){
         </ul>
       </div>
 
-      {/* Upload Button */}
+      {/* upload video & view history button */}
     <div className ="flex justify-end items-center mt-5 gap-4">
            <Link href="/patientHistory">
           <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
@@ -134,59 +138,60 @@ export default function Home(){
             </svg>
           </button>
         </Link>
-      </div>
-    </main>
+  </div>
 
-  );
-                {/*table*/}
-                <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg mt-8">
-                    <table className="w-full table-fixed">
-                        <thead className="bg-gray-100 border-b border-gray-300">
-                            <tr>
-                                <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                    Patient Name
-                                </th>
-                                <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                    Date of Birth
-                                </th>
-                                <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                    Date of Last Change
-                                </th>
-                                <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {patientData.map((patient) => (
-                                <tr 
-                                    key={patient.id}
-                                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                                >
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {patient.patientName}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {patient.dob}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {patient.dateChanged}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        <button className="text-blue-600 hover:text-blue-800 mr-3">
-                                            Edit
-                                        </button>
-                                        <button className="text-red-600 hover:text-red-800">
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-          
-        </main>
-    )
+<div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg mt-8">
+        <table className="w-full table-fixed">
+            <thead className="bg-gray-100 border-b border-gray-300">
+                <tr>
+                    <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                        Patient Name
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                        Date of Birth
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                        Date of Last Change
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {patientData.map((patient) => (
+                    <tr 
+                        key={patient.id}
+                        className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                    >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {patient.patientName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {patient.dob}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {patient.dateChanged}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <button className="text-blue-600 hover:text-blue-800 mr-3">
+                                Edit
+                            </button>
+                            <button className="text-red-600 hover:text-red-800">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+        {filteredPatients.length === 0 && (
+                        <div className="p-6 text-center text-gray-500">
+                            No patients found matching your search.
+                        </div>
+                    )}
+    </div>
+</div>
+</main>
+)
 }
