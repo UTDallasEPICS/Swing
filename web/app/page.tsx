@@ -1,6 +1,6 @@
 "use client";
 import {useEffect} from 'react'
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import {useState} from 'react'
@@ -12,11 +12,12 @@ interface PatientItem{
     dob: string;
     dateChanged: string;
 }
-
+export let patientID: any
 export default function Home(){
     const [searchQuery, setSearchQuery] = useState('')
     //change this soon itll come from something else
     const [selectedItems, setSelectedItems] = useState<string[]>([])
+    const router = useRouter()
     const patientData: PatientItem[] = [
         {
             id: '1',
@@ -57,6 +58,11 @@ export default function Home(){
             prev.includes(id) ? prev.filter(itemID =>itemID !== id) :
             [...prev, id]
         )
+    }
+    const realSpill = (id: any) =>
+    {
+        patientID = id
+        router.push('/instruction_page')
     }
         const toggleAllItems = () => {
             if (selectedItems.length === patientData.length){
@@ -123,7 +129,8 @@ export default function Home(){
                             {patientData.map((patient) => (
                                 <tr 
                                     key={patient.id}
-                                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                                    className="border-b border-gray-200 hover:transform hover:scale-[1.02] hover:shadow-md hover:z-10 hover:bg-gray-50 hover:relative transition-all duration-200"
+                                    onClick={() => realSpill(patient.id)}
                                 >
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {patient.patientName}
