@@ -7,7 +7,7 @@ export default function NavArrows() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // 👇 hide navigation arrows on specific pages
+  //hide navigation arrows on specific pages
   const hideOn = new Set<string>(["/login"]);
   if (hideOn.has(pathname)) return null;
 
