@@ -18,6 +18,7 @@ export default function Home(){
     //change this soon itll come from something else
     const [selectedItems, setSelectedItems] = useState<string[]>([])
     const router = useRouter()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const patientData: PatientItem[] = [
         {
             id: '1',
