@@ -1,5 +1,9 @@
 {
   "dependencies": {
+    "@prisma/client": "^6.18.0",
     "js-cookie": "^3.0.5"
+  },
+  "devDependencies": {
+    "prisma": "^6.18.0"
   }
 }
