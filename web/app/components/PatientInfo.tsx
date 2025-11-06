@@ -15,7 +15,8 @@ const AddPatientPage = ({ handleShowModal }: { handleShowModal?: () => void }) =
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            className="w-full h-full absolute top-0 backdrop-filter backdrop-brightness-75
+            backdrop-blur-md fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
             onClick={() => handleShowModal && handleShowModal()}
         >
             <div
@@ -26,7 +27,7 @@ const AddPatientPage = ({ handleShowModal }: { handleShowModal?: () => void }) =
                     Patient Information
                 </h1>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4 text-black">
                     <div>
                         <label className="block text-sm text-gray-700 mb-1">First Name</label>
                         <input

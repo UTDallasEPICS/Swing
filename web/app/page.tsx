@@ -4,6 +4,7 @@ import { redirect, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import {useState} from 'react'
+import AddPatientPage from "./components/PatientInfo";
 import Link from 'next/link'
 
 interface PatientItem{
@@ -19,6 +20,10 @@ export default function Home(){
     const [selectedItems, setSelectedItems] = useState<string[]>([])
     const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [showModal, setShowModal] = useState(false)
+    const handleShowModal = () =>{
+        setShowModal(!showModal)
+    }
     const patientData: PatientItem[] = [
         {
             id: '1',
@@ -76,6 +81,7 @@ export default function Home(){
         //patientID = id
         router.push(`instruction_page?id=${encodeURIComponent(id)}`)
     }
+
     //function not implemented yet but if we want to add check boxes this is the way good for exporting to excel
         const toggleAllItems = () => {
             if (selectedItems.length === patientData.length){
@@ -101,6 +107,7 @@ export default function Home(){
             <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-24 mt-12">
                 {/*header section*/}
                 <div className="flex items-center justify-between mb-6">
+                    {showModal && <AddPatientPage handleShowModal={handleShowModal}/>}
                     <h1 className="text-3xl text-black border-0 focus:outline-none">Patient Profile</h1>
                     {/*search bar */}
                     <div className="flex-1 max-w-md mx-8">
@@ -114,7 +121,7 @@ export default function Home(){
                     </div>
                     {/*buttons*/}
                     <div className="flex gap-3">
-                        <button className="px-6 py-2 bg-black border-0 focus:outline-none text-white rounded hover:bg-black transition-colors">
+                        <button onClick={() => handleShowModal()} className="px-6 py-2 bg-black border-0 focus:outline-none text-white rounded hover:bg-black transition-colors">
                             Add Patient
                         </button>
                     </div>
