@@ -12,7 +12,7 @@ interface PatientItem{
     dob: string;
     dateChanged: string;
 }
-export let patientID: any
+//export let patientID: any
 export default function Home(){
     const [searchQuery, setSearchQuery] = useState('')
     //change this soon itll come from something else
@@ -44,7 +44,18 @@ export default function Home(){
             dob: '1/30/2004',
             dateChanged: '10/18/2024'
         }
-    ]
+    ];
+
+    // Filter patients based on the search query (case-insensitive)
+    const filteredPatients = patientData.filter((p) => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return true; // no filter -> show all
+        return (
+            p.patientName.toLowerCase().includes(q) ||
+            p.dob.toLowerCase().includes(q) ||
+            p.dateChanged.toLowerCase().includes(q)
+        );
+    });
     useEffect(() => {
         //check if the redirect cookie exists
         const hasRedirected = Cookies.get('hasRedirected');
@@ -62,9 +73,10 @@ export default function Home(){
     }
     const realSpill = (id: any) =>
     {
-        patientID = id
-        router.push('/instruction_page')
+        //patientID = id
+        router.push(`instruction_page?id=${encodeURIComponent(id)}`)
     }
+    //function not implemented yet but if we want to add check boxes this is the way good for exporting to excel
         const toggleAllItems = () => {
             if (selectedItems.length === patientData.length){
                 setSelectedItems([])
@@ -72,6 +84,7 @@ export default function Home(){
                 setSelectedItems(patientData.map(item => item.id))
             }
         }
+        
     return (
         <main className="flex flex-col items-center min-h-screen bg-white w-full p-4">
             <div className="fixed top-5 left-5 w-[40vw] sm:w-[30vw] md:w-[25vw] max-w-[500px] z-50">
@@ -87,7 +100,7 @@ export default function Home(){
             </div>
             <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-24 mt-12">
                 {/*header section*/}
-                <div className="flex iterms-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-6">
                     <h1 className="text-3xl text-black border-0 focus:outline-none">Patient Profile</h1>
                     {/*search bar */}
                     <div className="flex-1 max-w-md mx-8">
@@ -127,33 +140,42 @@ export default function Home(){
                             </tr>
                         </thead>
                         <tbody>
-                            {patientData.map((patient) => (
-                                <tr 
-                                    key={patient.id}
-                                    className="border-b border-gray-200 hover:transform hover:scale-[1.02] hover:shadow-md hover:z-10 hover:bg-gray-50 hover:relative transition-all duration-200"
-                                    onClick={() => realSpill(patient.id)}
-                                >
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {patient.patientName}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {patient.dob}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {patient.dateChanged}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        <button className="text-blue-600 hover:text-blue-800 mr-3">
-                                            Edit
-                                        </button>
-                                        <button className="text-red-600 hover:text-red-800">
-                                            Delete
-                                        </button>
+                            {filteredPatients.length > 0 ? (
+                                filteredPatients.map((patient) => (
+                                    <tr 
+                                        key={patient.id}
+                                        className="border-b border-gray-200 hover:transform hover:scale-[1.02] hover:shadow-md hover:z-10 hover:bg-gray-50 hover:relative transition-all duration-200"
+                                        onClick={() => realSpill(patient.id)}
+                                    >
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {patient.patientName}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                            {patient.dob}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                            {patient.dateChanged}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            <button className="text-blue-600 hover:text-blue-800 mr-3">
+                                                Edit
+                                            </button>
+                                            <button className="text-red-600 hover:text-red-800">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-6 text-center text-sm text-gray-600">
+                                        No results found
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
+                    
                 </div>
             </div>
           

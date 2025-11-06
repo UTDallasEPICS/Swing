@@ -4,7 +4,13 @@ import { redirect } from 'next/navigation';
 //import Cookies from 'js-cookie'; 
 import Link from 'next/link';
 
-export default function InstructionPage() {
+export default function InstructionPage({params}:
+  {
+    params:{id: string}
+  }
+)
+ {
+  const {id} = params
   /*useEffect(() => {
     //Check if the redirect cookie exists
     const hasRedirected = Cookies.get('hasRedirected');
