@@ -155,7 +155,14 @@ def analyze_video(video_path, output_path):
         derivatives[f'{joint}_Y_Acceleration'] = a
 
     # Create a simplified analysis plot with only essential data
-    fig = plt.figure(figsize=(8, 8))  # Reduced from 10x10
+    fig = plt.figure(figsize=(8, 8))  
+
+    # --- Fixed global limits for consistent comparison --- #
+    y_min, y_max = 0.1, 0.9
+    v_min, v_max = -2.0, 2.0
+    a_min, a_max = -8.0, 8.0
+    t_min, t_max = 0, 25
+
 
     # Plot vertical positions
     plt.subplot(2, 2, 1)
@@ -167,6 +174,8 @@ def analyze_video(video_path, output_path):
     plt.ylabel('Position')
     plt.legend()
     plt.grid(True, alpha=0.3)  # Reduced grid opacity
+    plt.ylim(y_min, y_max )
+    plt.xlim(t_min, t_max)
 
     # Plot vertical velocities
     plt.subplot(2, 2, 2)
@@ -178,6 +187,8 @@ def analyze_video(video_path, output_path):
     plt.ylabel('Velocity')
     plt.legend()
     plt.grid(True, alpha=0.3)
+    plt.ylim(v_min, v_max)
+    plt.xlim(t_min, t_max)
 
     # Plot vertical accelerations
     plt.subplot(2, 2, 3)
@@ -189,6 +200,8 @@ def analyze_video(video_path, output_path):
     plt.ylabel('Acceleration')
     plt.legend()
     plt.grid(True, alpha=0.3)
+    plt.ylim(a_min, a_max)  
+    plt.xlim(t_min, t_max)
 
     # Plot 3D trajectory with reduced points
     ax = fig.add_subplot(2, 2, 4, projection='3d')
@@ -203,6 +216,7 @@ def analyze_video(video_path, output_path):
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.legend()
+    ax.set_box_aspect([1, 1, 1])  
 
     # Save the plot with reduced DPI and simplified style
     plt.tight_layout()
