@@ -1,0 +1,223 @@
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: #ffffff;
+}
+
+.title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 8rem;
+  text-align: center;
+}
+
+
+
+.uploadContainer {
+  width: 100%;
+  max-width: 600px;
+  border: 2px dashed #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.uploadArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.uploadIcon {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+}
+
+.uploadText {
+  font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.uploadSubtext {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.fileInputLabel {
+  position: relative;
+  display: inline-block;
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.selectFileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.selectFileButton:hover {
+  background-color: #1d4ed8;
+}
+
+.selectFileButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #3b82f6;
+}
+
+.selectedFile {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* Styles for the uploaded files list */
+.uploadedFiles {
+  margin-top: 20px;
+}
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    background: rgba(var(--card-rgb), 0.1);
+    border: 1px solid rgba(var(--card-border-rgb), 0.15);
+  }
+}
+
+.uploadedFile {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.uploadedFile p {
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.processing {
+  color: gray;
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* Styles for the processing animation (spinner) */
+.processingAnimation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Feedback messages for file validation (optional) */
+.alert {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Styling the button and upload area */
+.uploadContainer {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: transparent;
+}
+
+.uploadContainer:hover {
+  border-color: #3498db;
+  background-color: #e6f7ff;
+}
+
+.uploadIcon {
+  margin-bottom: 10px;
+}
+
+.uploadText {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.uploadSubtext {
+  font-size: 12px;
+  color: #888;
+}
+
+.fileInputLabel {
+  display: inline-block;
+  background-color: transparent;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.fileInputLabel:hover {
+  background-color: #2980b9;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .uploadContainer {
+    padding: 15px;
+  }
+
+  .fileInputLabel {
+    font-size: 14px;
+  }
+}
+
