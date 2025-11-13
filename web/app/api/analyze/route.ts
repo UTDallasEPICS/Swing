@@ -1,8 +1,73 @@
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 import { NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { writeFile } from 'fs/promises';
+//get handler
+export async function GET(request: Request) {
+  try {
+    //create url object, allows to extract query params
+    const url = new URL(request.url);
+    //get params from query string, if not provided then defaults
+    const page = Number(url.searchParams.get('page') ?? 1);
+    const perPage = Math.min(100, Number(url.searchParams.get('perPage') ?? 25));
+    //calcs how many items to skip based on page num
+    const skip = (Math.max(1, page) - 1) * perPage;
+    //runs both queries at the same time: get patient records, count total num of patient records in the table
+    const [items, total] = await Promise.all([
+      prisma.patient.findMany({
+        skip,
+        take: perPage,
+        orderBy: { id: 'desc' },
+      }),
+      prisma.patient.count(),
+    ]);
+    //return paginated data and meta info
+    return NextResponse.json({ items, total, page, perPage });
+  } catch (e) { //error response
+    console.error(e);
+    return NextResponse.json({ error: 'Failed to fetch patients' }, { status: 500 });
+  }
+}
+//put handler
+export async function PUT(request: Request) {
+  try {
+    //parse json body
+    const body = await request.json();
+    //validate id
+    if (!body.id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    //perform update 
+    const updated = await prisma.patient.update({
+      where: { id: Number(body.id) }, //which record to update
+      data: { //fields to be modified
+        name: body.name,
+        dob: body.dob ? new Date(body.dob) : null,
+      },
+    });
+    return NextResponse.json(updated); //return updated record
+  } catch (e) { //error response
+    console.error(e);
+    return NextResponse.json({ error: 'Failed to update patient' }, { status: 500 });
+  }
+}
+//delete handler, safely deletes patient record
+export async function DELETE(request: Request) {
+  try {
+    //parse json body
+    const body = await request.json(); 
+    //validate id
+    if (!body.id) return NextResponse.json({error: 'Missing id'}, {status: 400});
+    //attempt to delete patient record, if does not exist throw error
+    const deleted = await prisma.patient.delete({where: { id: Number(body.is)}});
+    //return deleted record
+    return NextResponse.json(deleted);
+  } catch (e) { //error response
+    console.error(e);
+    return NextResponse.json({error: 'Failed to delete patient'}, {status: 500});
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -155,7 +220,79 @@ export async function POST(request: Request) {
     fs.copyFileSync(afterOutput, publicAfterOutput);
     fs.copyFileSync(improvementOutput, publicImprovementOutput);
     console.log('Copied analysis results to:', { publicBeforeOutput, publicAfterOutput, publicImprovementOutput });
+    
+    // prisma writes
+    try {
+      const beforePose = JSON.parse(fs.readFileSync(beforeJson, 'utf-8'));
+      const afterPose = JSON.parse(fs.readFileSync(afterJson, 'utf-8'));
+      const improvement = JSON.parse(fs.readFileSync(improvementOutput, 'utf-8'));
 
+      // Prefer summaries emitted by analyze_improvement.py; fall back to minimal defaults
+      const beforeSummary = improvement.before_summary ?? { ranges: { UpperArm: 0, Forearm: 0 }, smoothness: { UpperArm: 0, Forearm: 0 } };
+      const afterSummary = improvement.after_summary ?? { ranges: { UpperArm: 0, Forearm: 0 }, smoothness: { UpperArm: 0, Forearm: 0 } };
+
+      const beforeRangeAvg = (Number(beforeSummary.ranges.UpperArm) + Number(beforeSummary.ranges.Forearm)) / 2;
+      const afterRangeAvg = (Number(afterSummary.ranges.UpperArm) + Number(afterSummary.ranges.Forearm)) / 2;
+      const beforeSmoothAvg = (Number(beforeSummary.smoothness.UpperArm) + Number(beforeSummary.smoothness.Forearm)) / 2;
+      const afterSmoothAvg = (Number(afterSummary.smoothness.UpperArm) + Number(afterSummary.smoothness.Forearm)) / 2;
+
+      // Create VideoAnalysis rows
+      const beforeAnalysis = await prisma.videoAnalysis.create({
+        data: {
+          video: path.basename(beforePath),
+          graph_data: beforePose,
+          range_of_motion: Number(beforeRangeAvg),
+          upper_arm_movement: Number(beforeSummary.ranges.UpperArm),
+          forearm_movement: Number(beforeSummary.ranges.Forearm),
+          smoothness: Number(beforeSmoothAvg),
+          upper_arm_smoothness: Number(beforeSummary.smoothness.UpperArm),
+          forearm_smoothness: Number(beforeSummary.smoothness.Forearm)
+        }
+      });
+
+      const afterAnalysis = await prisma.videoAnalysis.create({
+        data: {
+          video: path.basename(afterPath),
+          graph_data: afterPose,
+          range_of_motion: Number(afterRangeAvg),
+          upper_arm_movement: Number(afterSummary.ranges.UpperArm),
+          forearm_movement: Number(afterSummary.ranges.Forearm),
+          smoothness: Number(afterSmoothAvg),
+          upper_arm_smoothness: Number(afterSummary.smoothness.UpperArm),
+          forearm_smoothness: Number(afterSummary.smoothness.Forearm)
+        }
+      });
+
+      // Compute percent changes (safe divide)
+      const safeDiv = (a: number, b: number) => b === 0 ? 0 : (a - b) / Math.abs(b);
+      const percentChangeROM = safeDiv(afterRangeAvg, beforeRangeAvg) * 100;
+      const percentChangeSmooth = safeDiv(afterSmoothAvg, beforeSmoothAvg) * 100;
+
+      // Pull example p-values from improvement statistics if present; default to 1.0
+      const romPValue = Number(improvement.statistics?.range_of_motion?.upper_arm?.p_value ?? improvement.statistics?.range_of_motion?.p_value ?? 1.0);
+      const smoothPValue = Number(improvement.statistics?.smoothness?.upper_arm?.p_value ?? improvement.statistics?.smoothness?.p_value ?? 1.0);
+
+      // Create TreatmentResult row linking the two analyses
+      await prisma.treatmentResult.create({
+        data: {
+          type_of_treatment: null,
+          percent_change_range_of_motion: Number(percentChangeROM),
+          rom_p_value: romPValue,
+          percent_change_of_smoothness: Number(percentChangeSmooth),
+          smoothness_p_value: smoothPValue,
+          patient_id: null,
+          before_analysis_id: beforeAnalysis.id,
+          after_analysis_id: afterAnalysis.id
+        }
+      });
+
+      console.log('Inserted analysis rows into DB:', { beforeAnalysisId: beforeAnalysis.id, afterAnalysisId: afterAnalysis.id });
+    } catch (dbErr) {
+      console.error('Error inserting into DB:', dbErr);
+    } finally {
+      // disconnect Prisma client after DB work
+      try { await prisma.$disconnect(); } catch (e) { /* ignore */ }
+    }
     // Clean up temporary files
     fs.unlinkSync(beforePath);
     fs.unlinkSync(afterPath);

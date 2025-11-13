@@ -1,95 +1,84 @@
 "use client";
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import { redirect, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
-import {useState} from 'react'
 import AddPatientPage from "./components/PatientInfo";
 import Link from 'next/link'
+import { getAllPatients } from '../queries/queries';
 
 interface PatientItem{
-    id: string;
-    patientName: string;
-    dob: string;
-    dateChanged: string;
+    id: number;
+    name: string;
+    dob?: string;
 }
-//export let patientID: any
 export default function Home(){
     const [searchQuery, setSearchQuery] = useState('')
-    //change this soon itll come from something else
-    const [selectedItems, setSelectedItems] = useState<string[]>([])
+    const [selectedItems, setSelectedItems] = useState<number[]>([])
     const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [showModal, setShowModal] = useState(false)
+    const [patients, setPatients] = useState<PatientItem[]>([])
+    const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
+    
+    useEffect(() => {
+        const fetchPatients = async () => {
+            try {
+                setIsLoading(true);
+                const data = await getAllPatients();
+                setPatients(data);
+            } catch (error) {
+                console.error('Failed to fetch patients:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        fetchPatients();
+    }, []);
+    const handleDelete = (id?: string) =>{
+        const target = id ?? deleteTarget
+        if (!target) return
+        setPatients(prev => prev.filter(p => p.id !== target))
+        setDeleteTarget(null)
+    }
     const handleShowModal = () =>{
         setShowModal(!showModal)
     }
-    const patientData: PatientItem[] = [
-        {
-            id: '1',
-            patientName: 'Bessie Young',
-            dob: '9/12/2006',
-            dateChanged: '10/20/2024'
-        },
-        {
-            id: '2',
-            patientName: 'John Smith',
-            dob: '3/15/2005',
-            dateChanged: '10/21/2024'
-        },
-        {
-            id: '3',
-            patientName: 'Sarah Johnson',
-            dob: '7/23/2007',
-            dateChanged: '10/19/2024'
-        },
-        {
-            id: '4',
-            patientName: 'Michael Brown',
-            dob: '1/30/2004',
-            dateChanged: '10/18/2024'
-        }
-    ];
-
-    // Filter patients based on the search query (case-insensitive)
-    const filteredPatients = patientData.filter((p) => {
+    const filteredPatients = patients.filter((p) => {
         const q = searchQuery.trim().toLowerCase();
         if (!q) return true; // no filter -> show all
         return (
-            p.patientName.toLowerCase().includes(q) ||
-            p.dob.toLowerCase().includes(q) ||
-            p.dateChanged.toLowerCase().includes(q)
+            p.name.toLowerCase().includes(q) ||
+            (p.dob?.toLowerCase().includes(q) ?? false)
         );
     });
     useEffect(() => {
-        //check if the redirect cookie exists
         const hasRedirected = Cookies.get('hasRedirected');
         if (!hasRedirected){
-            //set a cookie to indicate that the redirect has happend
             Cookies.set('hasRedirected', 'true', {expires: (24 * 60 * 60)});
-            redirect('/login') // if theres no cookie redirect to login page look back at this a bit
+            redirect('/login') 
         }
     }, [])
-    const toggleItemSelection = (id: string) => {
+    /*const toggleItemSelection = (id: number) => {
         setSelectedItems(prev =>
-            prev.includes(id) ? prev.filter(itemID =>itemID !== id) :
+            prev.includes(id) ? prev.filter(itemID => itemID !== id) :
             [...prev, id]
         )
-    }
+    }*/
     const realSpill = (id: any) =>
     {
         //patientID = id
         router.push(`instruction_page?id=${encodeURIComponent(id)}`)
     }
 
-    //function not implemented yet but if we want to add check boxes this is the way good for exporting to excel
-        const toggleAllItems = () => {
-            if (selectedItems.length === patientData.length){
-                setSelectedItems([])
-            } else {
-                setSelectedItems(patientData.map(item => item.id))
-            }
+   /* const toggleAllItems = () => {
+        if (selectedItems.length === patients.length){
+            setSelectedItems([])
+        } else {
+            setSelectedItems(patients.map((item: PatientItem) => item.id))
         }
+    }*/
         
     return (
         <main className="flex flex-col items-center min-h-screen bg-white w-full p-4">
@@ -139,9 +128,6 @@ export default function Home(){
                                     Date of Birth
                                 </th>
                                 <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                    Date of Last Change
-                                </th>
-                                <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
                                     Actions
                                 </th>
                             </tr>
@@ -155,27 +141,47 @@ export default function Home(){
                                         onClick={() => realSpill(patient.id)}
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {patient.patientName}
+                                            {patient.name}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            {patient.dob}
+                                            {patient.dob ? new Date(patient.dob).toLocaleDateString() : 'N/A'}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            {patient.dateChanged}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                            <button className="text-blue-600 hover:text-blue-800 mr-3">
-                                                Edit
-                                            </button>
-                                            <button className="text-red-600 hover:text-red-800">
-                                                Delete
-                                            </button>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm relative">
+                                            <div className="flex items-center gap-6">
+                                                <button
+                                                    className="text-blue-600 hover:text-blue-800"
+                                                    //onClick={() => { }}
+                                                >
+                                                    Edit
+                                                </button>
+
+                                                <div className="relative">
+                                                    <button
+                                                        className="text-red-600 hover:text-red-800"
+                                                        onClick={(e) => {
+                                                            // prevent the row click from firing (navigation)
+                                                            e.stopPropagation();
+                                                            if(window.confirm("Are you sure? Play dangerous games get dangerous results")){
+                                                                // confirmed: proceed with deletion logic
+                                                                setDeleteTarget(patient.id);
+                                                                console.log("Item deleted")
+                                                            } else {
+                                                                // cancelled: stay on the same page (do nothing)
+                                                                console.log("Deletion canceled")
+                                                            }
+                                                        }}
+                                                    >
+                                                        Delete
+                                                    </button>
+
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-6 text-center text-sm text-gray-600">
+                                    <td colSpan={3} className="px-6 py-6 text-center text-sm text-gray-600">
                                         No results found
                                     </td>
                                 </tr>
