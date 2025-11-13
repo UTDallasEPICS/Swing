@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'; // client redirect
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Router } from 'lucide-react';
 
 
 interface PatientItem{
@@ -15,6 +14,7 @@ interface PatientItem{
 }
 
 export default function Home(){
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('')
     //change this soon itll come from something else
     const [selectedItems, setSelectedItems] = useState<string[]>([])
@@ -150,7 +150,10 @@ export default function Home(){
                                 }
                             }} 
                             >
-                                View History
+                                <button className="text-blue-600 hover:text-blue-800 mr-3">
+                                    View History
+                                </button>
+                                
                             </Link>
                                 <button className="text-blue-600 hover:text-blue-800 mr-3">
                                     Edit
