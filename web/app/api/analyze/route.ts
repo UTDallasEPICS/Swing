@@ -60,7 +60,7 @@ export async function DELETE(request: Request) {
     //validate id
     if (!body.id) return NextResponse.json({error: 'Missing id'}, {status: 400});
     //attempt to delete patient record, if does not exist throw error
-    const deleted = await prisma.patient.delete({where: { id: Number(body.is)}});
+    const deleted = await prisma.patient.delete({where: { id: Number(body.id)}});
     //return deleted record
     return NextResponse.json(deleted);
   } catch (e) { //error response
