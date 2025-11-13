@@ -20,7 +20,7 @@ export default function PatientActions(){
       <div className="p-4">
         {/* upload video & view history buttons (moved from homepage) */}
         <div className ="flex justify-end items-center mt-5 gap-4">
-          <Link href="/patientHistory">
+          <Link href="/view_patient_history">
             <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
               cursor-pointer text-lg font-semibold transition duration-300
               shadow-lg hover:shadow-xl flex items-center gap-2">

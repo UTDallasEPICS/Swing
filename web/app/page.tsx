@@ -1,10 +1,10 @@
 "use client";
-import {useEffect} from 'react'
-import { redirect } from 'next/navigation';
+import {useEffect, useState} from 'react'
+import { useRouter } from 'next/navigation'; // client redirect
 import Cookies from 'js-cookie';
 import Image from 'next/image';
-import {useState} from 'react'
 import Link from 'next/link';
+import { Router } from 'lucide-react';
 
 
 interface PatientItem{
@@ -49,10 +49,11 @@ export default function Home(){
         const hasRedirected = Cookies.get('hasRedirected');
         if (!hasRedirected){
             //set a cookie to indicate that the redirect has happend
-            Cookies.set('hasRedirected', 'true', {expires: (24 * 60 * 60)});
-            redirect('/login') // if theres no cookie redirect to login page look back at this a bit
+            Cookies.set('hasRedirected', 'true', {expires: 1});
+            router.replace('/login'); // if theres no cookie redirect to login page look back at this a bit
         }
-    }, [])
+    }, [router]);
+
     const toggleItemSelection = (id: string) => {
         setSelectedItems(prev =>
             prev.includes(id) ? prev.filter(itemID =>itemID !== id) :
@@ -119,10 +120,9 @@ export default function Home(){
                         Date of Last Change
                     </th>
                     <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
+                        Actions</th>
+                    </tr>
+                </thead>
             <tbody>
                 {patientData.map((patient) => (
                     <tr 
@@ -139,9 +139,23 @@ export default function Home(){
                             {patient.dateChanged}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <button className="text-blue-600 hover:text-blue-800 mr-3">
-                                Edit
-                            </button>
+                            <Link
+                            href= {{
+                                pathname: '/view_patient_history',
+                                query: {
+                                    id: patient.id,
+                                    name: patient.patientName,
+                                    dob: patient.dob,
+                                    dateChanged: patient.dateChanged
+                                }
+                            }} 
+                            >
+                                View History
+                            </Link>
+                                <button className="text-blue-600 hover:text-blue-800 mr-3">
+                                    Edit
+                                </button>
+                            
                             <button className="text-red-600 hover:text-red-800">
                                 Delete
                             </button>
@@ -150,12 +164,14 @@ export default function Home(){
                 ))}
             </tbody>
         </table>
+        <div>
         {filteredPatients.length === 0 && (
                         <div className="p-6 text-center text-gray-500">
                             No patients found matching your search.
                         </div>
                     )}
     </div>
+</div>
 </div>
 </main>
 )
