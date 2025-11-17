@@ -2,17 +2,53 @@
 import React, { useState } from "react";
 
 const AddPatientPage = ({ handleShowModal }: { handleShowModal?: () => void }) => {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+    const [name, setName] = useState("");
+   // const [lastName, setLastName] = useState("");
+    const [message, setMessage] = useState('');
     const [dob, setDob] = useState("");
+    const[isLoading, setIsLoading] = useState(false)
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // replace with real submit logic
-        console.log("Submitting patient:", { firstName, lastName, dob });
-        handleShowModal && handleShowModal();
+        handleAdd(e as any);
+        //window.alert(message)
     };
-
+       const handleAdd = async(event: any) =>{
+        event.preventDefault();
+        setMessage('')
+        const PatientData = {
+            name: name,
+            dob: dob,
+            Results: []
+        }
+        try{
+            setIsLoading(true)
+            const response = await fetch(`/api/analyze`, {
+                method: "POST",
+                headers:{
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(PatientData)
+            });
+            if(response.ok){
+                const np = await response.json();
+                setMessage(`Patient ${np.name} has been successfully created`)
+                console.log('new patient data: ', np);
+                // Close modal after successful creation
+                setTimeout(() => {
+                    handleShowModal && handleShowModal();
+                }, 100);
+            } else{
+                const errData = await response.json();
+                setMessage(`Error (${response.status}): ${errData.error || 'Failed to create patient'}`);
+            }
+        }catch(soowoo){
+            console.error("Network or Parse Error:", soowoo)
+            setMessage('An unexpected error occurred. Check console')
+        }finally{
+            setIsLoading(false);
+        }
+    }
     return (
         <div
             className="w-full h-full absolute top-0 backdrop-filter backdrop-brightness-75
@@ -29,16 +65,16 @@ const AddPatientPage = ({ handleShowModal }: { handleShowModal?: () => void }) =
 
                 <form onSubmit={handleSubmit} className="space-y-4 text-black">
                     <div>
-                        <label className="block text-sm text-gray-700 mb-1">First Name</label>
+                        <label className="block text-sm text-gray-700 mb-1">Full Name</label>
                         <input
                             type="text"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             className="w-full h-10 bg-gray-200 rounded px-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
                     </div>
 
-                    <div>
+                    {/*<div>
                         <label className="block text-sm text-gray-700 mb-1">Last Name</label>
                         <input
                             type="text"
@@ -46,7 +82,7 @@ const AddPatientPage = ({ handleShowModal }: { handleShowModal?: () => void }) =
                             onChange={(e) => setLastName(e.target.value)}
                             className="w-full h-10 bg-gray-200 rounded px-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
-                    </div>
+                    </div>*/}
 
                     <div>
                         <label className="block text-sm text-gray-700 mb-1">Date of birth</label>

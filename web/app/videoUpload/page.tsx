@@ -110,7 +110,7 @@ export default function VideoUpload() {
     formData.append('afterVideo', afterVideo)
 
     try {
-      const response = await fetch('/api/analyze', {
+      const response = await fetch('/api/vid', {
         method: 'POST',
         body: formData,
       })
