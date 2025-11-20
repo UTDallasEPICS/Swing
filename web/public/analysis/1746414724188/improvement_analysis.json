@@ -25,7 +25,7 @@
     "range_of_motion": {
       "upper_arm": {
         "statistic": 4154.0,
-        "p_value": 1.2688938555306654e-06,
+        "p_value": 1.2688938555306654e-6,
         "significant": true
       },
       "forearm": {
