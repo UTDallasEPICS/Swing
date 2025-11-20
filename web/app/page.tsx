@@ -213,7 +213,11 @@ export default function Home(){
                                             <div className="flex items-center gap-6">
                                                 <button
                                                     className="text-blue-600 hover:text-blue-800"
-                                                    //onClick={() => { }}
+                                                    onClick={(e) => {
+                                                            // prevent the row click from firing (navigation)
+                                                            e.stopPropagation();
+                                                            handleShowModal();
+                                                        }}
                                                 >
                                                     Edit
                                                 </button>
