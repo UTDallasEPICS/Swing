@@ -5,6 +5,26 @@ import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { writeFile } from 'fs/promises';
+export async function GET(request: Request){
+  try{
+    const url = new URL(request.url)
+    const page = Number(url.searchParams.get('page') ?? 1);
+    const perPage = Math.min(100, Number(url.searchParams.get('perPage') ?? 25));
+    const skip = (Math.max(1, page) - 1) * perPage;
+    const [items, total] = await Promise.all([
+      prisma.treatmentResult.findMany({
+          skip,
+          take: perPage,
+          orderBy: { id: 'desc'}
+      }),
+      prisma.treatmentResult.count()
+    ]);
+    return NextResponse.json({items, total, page, perPage})
+  }catch(e){
+    console.error(e);
+    return NextResponse.json({error: 'Failed to fetch results '}, {status: 500})
+  }
+}
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -253,87 +273,4 @@ export async function POST(request: Request) {
       success: false,
       message: error instanceof Error ? error.message : 'An error occurred during analysis'
     }, { status: 500 });
-  }
-}
-
-export async function DELETE(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const analysisId = searchParams.get('analysisId');
-    const treatmentResultId = searchParams.get('treatmentResultId');
-
-    if (!analysisId && !treatmentResultId) {
-      return NextResponse.json({
-        success: false,
-        message: 'Either analysisId or treatmentResultId is required'
-      }, { status: 400 });
-    }
-
-    // Delete files if analysisId is provided
-    if (analysisId) {
-      const publicDir = path.join(process.cwd(), 'public');
-      const analysisDir = path.join(publicDir, 'analysis', analysisId);
-      
-      if (fs.existsSync(analysisDir)) {
-        fs.rmSync(analysisDir, { recursive: true, force: true });
-        console.log('Deleted analysis directory:', analysisDir);
-      }
-    }
-
-    // Delete database records if treatmentResultId is provided
-    if (treatmentResultId) {
-      try {
-        const treatmentResult = await prisma.treatmentResult.findUnique({
-          where: { id: parseInt(treatmentResultId) },
-          include: {
-            BeforeAnalysis: true,
-            AfterAnalysis: true
-          }
-        });
-
-        if (!treatmentResult) {
-          return NextResponse.json({
-            success: false,
-            message: 'Treatment result not found'
-          }, { status: 404 });
-        }
-
-        // Delete the treatment result
-        await prisma.treatmentResult.delete({
-          where: { id: treatmentResult.id }
-        });
-        console.log('Deleted treatment result:', treatmentResult.id);
-
-        // Delete the video analysis records
-        await prisma.videoAnalysis.delete({
-          where: { id: treatmentResult.BeforeAnalysis.id }
-        });
-        console.log('Deleted before analysis:', treatmentResult.BeforeAnalysis.id);
-
-        await prisma.videoAnalysis.delete({
-          where: { id: treatmentResult.AfterAnalysis.id }
-        });
-        console.log('Deleted after analysis:', treatmentResult.AfterAnalysis.id);
-
-        console.log('Deleted database records for treatment result:', treatmentResult.id);
-      } catch (dbErr) {
-        console.error('Error deleting from DB:', dbErr);
-      } finally {
-        // disconnect Prisma client after DB work
-        try { await prisma.$disconnect();} catch (e) { /* ignore */ }
-      }
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Analysis deleted successfully'
-    });
-
-  } catch (error) {
-    console.error('Delete error:', error);
-    return NextResponse.json({
-      success: false,
-      message: error instanceof Error ? error.message : 'An error occurred during deletion'
-    }, { status: 500 });
-  }
-} 
+  }} 
