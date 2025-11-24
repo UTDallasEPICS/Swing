@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function InstructionPage({params}:
   {
-    params:{id: string}
+    params:{id: number}
   }
 )
  {

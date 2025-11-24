@@ -19,7 +19,7 @@ export default function Home(){
     const [patients, setPatients] = useState<PatientItem[]>([])
     const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
     const patientsRef = useRef<PatientItem[]>([])
-    
+    const[modalData, setModalData] = useState(null);
     useEffect(() => {
         const controller = new AbortController();
 
@@ -97,7 +97,13 @@ export default function Home(){
         }
         
     }*/
-    const handleShowModal = () =>{
+    const handleShowModal = (data?: any) =>{
+        if(data){
+            setModalData(data)
+        }
+        else{
+            setModalData(null)
+        }
         setShowModal(!showModal)
     }
     const filteredPatients = patients.filter((p) => {
@@ -145,7 +151,7 @@ export default function Home(){
     return (
         
         <main className="flex flex-col items-center min-h-screen bg-white w-full p-4">
-            <div className="fixed top-5 left-5 w-[40vw] sm:w-[30vw] md:w-[25vw] max-w-[500px] z-50">
+            <div className="w-[40vw] sm:w-[30vw] md:w-[25vw] max-w-[500px] mb-8">
                 <Image
                 className="max-w-full h-auto"
                 src="/image2vector.svg"
@@ -156,7 +162,7 @@ export default function Home(){
                 priority
                 />
             </div>
-            <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-24 mt-12">
+            <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-8">
                 {/*header section*/}
                 <div className="flex items-center justify-between mb-6">
                     {showModal && <AddPatientPage handleShowModal={handleShowModal}/>}
@@ -180,9 +186,9 @@ export default function Home(){
                 </div>
 
                 {/*table*/}
-                <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg mt-8">
+                <div className="border border-gray-300 rounded-lg overflow-y-auto overflow-x-hidden max-h-[410px] shadow-lg mt-8">
                     <table className="w-full table-fixed">
-                        <thead className="bg-gray-100 border-b border-gray-300">
+                        <thead className="sticky top-0 bg-gray-100 border-b border-gray-300 z-10">
                             <tr>
                                 <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
                                     Patient Name
@@ -195,7 +201,7 @@ export default function Home(){
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="table-container">
                             {filteredPatients.length > 0 ? (
                                 filteredPatients.map((patient) => (
                                     <tr 
@@ -213,11 +219,8 @@ export default function Home(){
                                             <div className="flex items-center gap-6">
                                                 <button
                                                     className="text-blue-600 hover:text-blue-800"
-                                                    onClick={(e) => {
-                                                            // prevent the row click from firing (navigation)
-                                                            e.stopPropagation();
-                                                            handleShowModal();
-                                                        }}
+                                                    onClick={(r) => {r.stopPropagation();
+                                                        handleShowModal({id: patient.id, name: patient.name, dob: patient.dob})}}
                                                 >
                                                     Edit
                                                 </button>
@@ -228,7 +231,7 @@ export default function Home(){
                                                         onClick={(e) => {
                                                             // prevent the row click from firing (navigation)
                                                             e.stopPropagation();
-                                                            if(window.confirm("Are you sure? Play dangerous games get dangerous results")){
+                                                            if(window.confirm("I WALK SHIT DOWN")){
                                                                 // confirmed: proceed with deletion logic
                                                                 setDeleteTarget(patient.id);
                                                                 console.log("Item deleted")
