@@ -38,13 +38,14 @@ export async function PUT(request: Request) {
     const body = await request.json();
     //validate id
     if (!body.id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    if (!body.name && !body.dob) return NextResponse.json({error:'Needs to atleast a name or DOB'}, {status: 400})
+    const updateData: any = {};
+    if (body.name) updateData.name = body.name;
+    if (body.dob) updateData.dob = new Date(body.dob)
     //perform update 
     const updated = await prisma.patient.update({
       where: { id: Number(body.id) }, //which record to update
-      data: { //fields to be modified
-        name: body.name,
-        dob: body.dob ? new Date(body.dob) : null,
-      },
+      data: updateData,
     });
     return NextResponse.json(updated); //return updated record
   } catch (e) { //error response
