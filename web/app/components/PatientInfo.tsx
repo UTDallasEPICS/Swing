@@ -1,31 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-const AddPatientPage = ({ handleShowModal, modalData }: { handleShowModal?: () => void, modalData? :{id: number, Name: string, Dob?: Date | null} | null}) => {
-    const {id, Name, Dob} = modalData || {}
-    const [name, setName] = useState(Name || '');
+const AddPatientPage = ({ handleShowModal, id, Name, Dob }: { handleShowModal?: () => void, id?: number, Name?: string, Dob?: Date}) => {
+    const [name, setName] = useState("");
    // const [lastName, setLastName] = useState("");
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState(Name || '');
     const [dob, setDob] = useState(Dob || null);
     const[isLoading, setIsLoading] = useState(false)
-    
-    // Check if form has changed from original modalData
-    const hasChanges = () => {
-        if (!modalData) return true; 
-        console.log(name !== Name)
-        return name !== (Name) || dob !== (Dob || null);
-    };
-    
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // If editing and no changes, show error
-        if (modalData && !hasChanges()) {
-            setMessage("Make at least one change");
-            return;
-        }
-        
-        if(!modalData){
+        if(!id){
             handleAdd(e as any)
         }
         else
@@ -34,7 +19,7 @@ const AddPatientPage = ({ handleShowModal, modalData }: { handleShowModal?: () =
         }
         //window.alert(message)
     };
-   const handleUpdate = async(event: React.FormEvent) =>{
+   const handleUpdate = async(event: any) =>{
         event.preventDefault()
         const UpdateData = {
             id: id,
@@ -47,25 +32,13 @@ const AddPatientPage = ({ handleShowModal, modalData }: { handleShowModal?: () =
         else{
             try{
             setIsLoading(true)
-            const response = await fetch(`/api/analyze`, {
+            const response = await fetch(`/api/analyze}`, {
                 method: 'PUT',
                 headers:{
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(UpdateData)
             })
-            if(response.ok){
-                const np = await response.json();
-                setMessage(`Patient ${np.name} has been successfully updated`)
-                console.log('updated patient data: ', np);
-                // Close modal after successful creation
-                setTimeout(() => {
-                    handleShowModal && handleShowModal();
-                }, 100);
-            } else{
-                const errData = await response.json();
-                setMessage(`Error (${response.status}): ${errData.error || 'Failed to create patient'}`);
-            }
             }catch(error){
                 console.error("Network or Parse error")
                 setMessage("An unexpected error occurred")
@@ -131,9 +104,7 @@ const AddPatientPage = ({ handleShowModal, modalData }: { handleShowModal?: () =
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 text-center">
                     Patient Information
                 </h1>
-                {
-                    /*if(name === Name*/
-                }
+
                 <form onSubmit={handleSubmit} className="space-y-4 text-black">
                     <div>
                         <label className="block text-sm text-gray-700 mb-1">Full Name</label>
@@ -174,11 +145,6 @@ const AddPatientPage = ({ handleShowModal, modalData }: { handleShowModal?: () =
                             Submit
                         </button>
                     </div>
-                    {message === "Make at least one change" && (
-                        <div className="mt-4 p-3 rounded text-center font-semibold bg-orange-100 text-orange-800">
-                            {message}
-                        </div>
-                    )}
                 </form>
             </div>
             </div>

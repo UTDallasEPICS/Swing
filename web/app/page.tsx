@@ -17,19 +17,17 @@ interface PatientItem{
     dob?: string;
 }
 
-
 export default function Home(){
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedItems, setSelectedItems] = useState<number[]>([])
-  //  const [editPatient, setEditPatient] = useState(null)
     const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [showModal, setShowModal] = useState(false)
     const [patients, setPatients] = useState<PatientItem[]>([])
     const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
     const patientsRef = useRef<PatientItem[]>([])
-    const[modalData, setModalData] = useState<PatientItem | null>(null);
+    const[modalData, setModalData] = useState(null);
     useEffect(() => {
         const controller = new AbortController();
 
@@ -57,7 +55,7 @@ export default function Home(){
 
         // initial fetch then poll every 5s
         fetchPatients();
-        const interval = setInterval(fetchPatients, 5000);
+        const interval = setInterval(fetchPatients, 1000);
         return () => {
             controller.abort();
             clearInterval(interval);
@@ -88,12 +86,30 @@ export default function Home(){
         }finally{
             setIsLoading(false)
         }
-    } 
-    const handleShowModal = (data?: PatientItem) =>{
+    } /* const handleUpdate = async(id: any, name?: any, dob?: any) =>{
+        if(!name && !dob){
+            console.log('please dont do that ')
+        }
+        else{
+            try{
+            setIsLoading(true)
+            const response = await fetch(`/api/analyze${id}`, {
+                method: 'PUT',
+                body:
+            })
+            }catch{
+
+            }finally{
+
+            }
+        }
         
+    }*/
+    const handleShowModal = (data?: any) =>{
         if(data){
-           setModalData(data)
-        }else{
+            setModalData(data)
+        }
+        else{
             setModalData(null)
         }
         setShowModal(!showModal)
@@ -126,7 +142,6 @@ export default function Home(){
         //patientID = id
         //console.log(typeof id)
         router.push(`instruction_page?id=${encodeURIComponent(id)}`)
-        //router.push({pathname: 'instruction_page', query:{id}})
     }
 
    /* const toggleAllItems = () => {
@@ -157,13 +172,7 @@ export default function Home(){
             <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-24 mt-12">
                 {/*header section*/}
                 <div className="flex items-center justify-between mb-6">
-                    {showModal && <AddPatientPage  handleShowModal={handleShowModal}
-                      modalData={modalData?{
-                        id: modalData.id,
-                        Name: modalData.name,
-                        Dob: modalData.dob? new Date(modalData.dob) : undefined
-                      }: null}
-                    />}
+                    {showModal && <AddPatientPage handleShowModal={handleShowModal}/>}
                     <h1 className="text-3xl text-black border-0 focus:outline-none">Patient Profile</h1>
                     {/*search bar */}
                     <div className="flex-1 max-w-md mx-8">
@@ -186,8 +195,7 @@ export default function Home(){
                 {/*table*/}
                 <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg mt-8">
                     <table className="w-full table-fixed">
-                        {/*sticky top-0*/}
-                        <thead className=" bg-gray-100 border-b border-gray-300 z-10">
+                        <thead className="sticky top-0 bg-gray-100 border-b border-gray-300 z-10">
                             <tr>
                                 <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
                                     Patient Name

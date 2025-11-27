@@ -28,14 +28,13 @@ export async function GET(request: Request){
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const pID = new Number(formData.get('id')).valueOf()
     const beforeVideo = formData.get('beforeVideo') as File;
     const afterVideo = formData.get('afterVideo') as File;
 
-    if (!beforeVideo || !afterVideo || !pID) {
+    if (!beforeVideo || !afterVideo) {
       return NextResponse.json({
         success: false,
-        message: 'Both videos and the associated patient are required'
+        message: 'Both videos are required'
       }, { status: 400 });
     }
 
@@ -237,7 +236,7 @@ export async function POST(request: Request) {
           rom_p_value: romPValue,
           percent_change_of_smoothness: Number(percentChangeSmooth),
           smoothness_p_value: smoothPValue,
-          patient_id: pID,
+          patient_id: null,
           before_analysis_id: beforeAnalysis.id,
           after_analysis_id: afterAnalysis.id
         }

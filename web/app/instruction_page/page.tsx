@@ -60,7 +60,7 @@ export default function InstructionPage({params}:
             </svg>
           </button>
         </Link>
-           <Link href={{pathname: "/videoUpload", query: {id: id}}}>
+           <Link href="/videoUpload">
           <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
             cursor-pointer text-lg font-semibold transition duration-300
             shadow-lg hover:shadow-xl flex items-center gap-2">

@@ -6,12 +6,7 @@ import { useState, useCallback } from 'react'
 import styles from './video.module.css'
 import { useRouter } from 'next/navigation'
 
-export default function VideoUpload({params}:
-  {
-    params: {id: number}
-  }
-) {
-  const pID = params.id
+export default function VideoUpload() {
   const [dragActive, setDragActive] = useState<boolean>(false)
   const [beforeVideo, setBeforeVideo] = useState<File | null>(null)
   const [afterVideo, setAfterVideo] = useState<File | null>(null)
@@ -111,7 +106,6 @@ export default function VideoUpload({params}:
     setError(null)
 
     const formData = new FormData()
-    formData.append('id', String(pID))
     formData.append('beforeVideo', beforeVideo)
     formData.append('afterVideo', afterVideo)
 
