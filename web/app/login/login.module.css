@@ -1,73 +1,73 @@
 .main {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 3rem;
-    min-height: 100vh;
-    background-color: white;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: white;
+}
 .loginText {
-    color: rgb(0, 0, 0);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding-bottom: 3rem;
+  color: rgb(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 3rem;
 }
 .normalText {
-    color: rgb(0, 0, 0);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding-top: 3rem;
-    padding-bottom: 1rem;
+  color: rgb(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: 3rem;
+  padding-bottom: 1rem;
 }
 .loginFields {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 .inputFields {
-    color: rgb(0, 0, 0);
-    margin-bottom: 2rem;
-    padding: 1rem;
-    border-radius: 1rem;
-    border: 1px solid #000000;
-    width: 20rem;
-    box-shadow: 0 4px 5px rgb(0, 0, 0, 0.3);
+  color: rgb(0, 0, 0);
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #000000;
+  width: 20rem;
+  box-shadow: 0 4px 5px rgb(0, 0, 0, 0.3);
 }
 .labelText {
-    width: 100%;
-    text-align:left;
-    padding: 5px;
+  width: 100%;
+  text-align: left;
+  padding: 5px;
 }
 .loginButton {
-    color: rgb(0, 0, 0);
-    margin-top: 3rem;
-    padding: 1rem;
-    border-radius: 1rem;
-    border: 1px solid #000000;
-    width: 20rem;
-    box-shadow: 0 4px 5px rgb(0, 0, 0, 0.3);
-    background-color:#82ef15;
-    color: black;
+  color: rgb(0, 0, 0);
+  margin-top: 3rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #000000;
+  width: 20rem;
+  box-shadow: 0 4px 5px rgb(0, 0, 0, 0.3);
+  background-color: #82ef15;
+  color: black;
 }
 
-.backgroundColor{
-    background-color: #A8C090;
-    color: #A8C090;
+.backgroundColor {
+  background-color: #a8c090;
+  color: #a8c090;
 }
 
 .my-hover-class {
-    transition: background-color 0.3s ease;
-  }
-  
-  .my-hover-class:hover {
-    background-color: #A8C090;
-  }
+  transition: background-color 0.3s ease;
+}
+
+.my-hover-class:hover {
+  background-color: #a8c090;
+}

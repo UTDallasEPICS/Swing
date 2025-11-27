@@ -4,6 +4,13 @@ import { redirect, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import AddPatientPage from "./components/PatientInfo";
+import {useEffect, useState} from 'react'
+import { useRouter } from 'next/navigation'; // client redirect
+import Cookies from 'js-cookie';
+import Image from 'next/image';
+import Link from 'next/link';
+
+
 interface PatientItem{
     id: number;
     name: string;
@@ -12,6 +19,7 @@ interface PatientItem{
 
 
 export default function Home(){
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedItems, setSelectedItems] = useState<number[]>([])
   //  const [editPatient, setEditPatient] = useState(null)
@@ -101,17 +109,13 @@ export default function Home(){
     useEffect(() => {
         const hasRedirected = Cookies.get('hasRedirected');
         if (!hasRedirected){
-            Cookies.set('hasRedirected', 'true', {expires: (24 * 60 * 60)});
-            redirect('/login') 
+            //set a cookie to indicate that the redirect has happend
+            Cookies.set('hasRedirected', 'true', {expires: 1});
+            router.replace('/login'); // if theres no cookie redirect to login page look back at this a bit
         }
-    }, [])
-    useEffect(() =>{
-        if(deleteTarget){
-            handleDelete(deleteTarget)
-            setDeleteTarget(null)
-        }
-    }, [deleteTarget])
-    /*const toggleItemSelection = (id: number) => {
+    }, [router]);
+
+    /*const toggleItemSelection = (id: string) => {
         setSelectedItems(prev =>
             prev.includes(id) ? prev.filter(itemID => itemID !== id) :
             [...prev, id]
@@ -133,6 +137,9 @@ export default function Home(){
         }
     }*/
         
+        const filteredPatients = patientData.filter(patient =>
+        patient.patientName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     return (
         
         <main className="flex flex-col items-center min-h-screen bg-white w-full p-4">
@@ -147,7 +154,7 @@ export default function Home(){
                 priority
                 />
             </div>
-            <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-8">
+            <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-24 mt-12">
                 {/*header section*/}
                 <div className="flex items-center justify-between mb-6">
                     {showModal && <AddPatientPage  handleShowModal={handleShowModal}
@@ -168,16 +175,16 @@ export default function Home(){
                             className = "w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    {/*buttons*/}
+                    {/* add patient button*/}
                     <div className="flex gap-3">
                         <button onClick={() => handleShowModal()} className="px-6 py-2 bg-black border-0 focus:outline-none text-white rounded hover:bg-black transition-colors">
                             Add Patient
                         </button>
                     </div>
-                </div>
+                    </div>
 
                 {/*table*/}
-                <div className="border border-gray-300 rounded-lg overflow-y-auto overflow-x-hidden max-h-[410px] shadow-lg mt-8">
+                <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg mt-8">
                     <table className="w-full table-fixed">
                         {/*sticky top-0*/}
                         <thead className=" bg-gray-100 border-b border-gray-300 z-10">
@@ -256,4 +263,76 @@ export default function Home(){
           
         </main>
     )
+}
+        <table className="w-full table-fixed">
+            <thead className="bg-gray-100 border-b border-gray-300">
+                <tr>
+                    <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                        Patient Name
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                        Date of Birth
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                        Date of Last Change
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                        Actions</th>
+                    </tr>
+                </thead>
+            <tbody>
+                {patientData.map((patient) => (
+                    <tr 
+                        key={patient.id}
+                        className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                    >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {patient.patientName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {patient.dob}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {patient.dateChanged}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <Link
+                            href= {{
+                                pathname: '/view_patient_history',
+                                query: {
+                                    id: patient.id,
+                                    name: patient.patientName,
+                                    dob: patient.dob,
+                                    dateChanged: patient.dateChanged
+                                }
+                            }} 
+                            >
+                                <button className="text-blue-600 hover:text-blue-800 mr-3">
+                                    View History
+                                </button>
+                                
+                            </Link>
+                                <button className="text-blue-600 hover:text-blue-800 mr-3">
+                                    Edit
+                                </button>
+                            
+                            <button className="text-red-600 hover:text-red-800">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+        <div>
+        {filteredPatients.length === 0 && (
+                        <div className="p-6 text-center text-gray-500">
+                            No patients found matching your search.
+                        </div>
+                    )}
+    </div>
+</div>
+</div>
+</main>
+)
 }
