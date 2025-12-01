@@ -1,9 +1,4 @@
 "use client";
-import {useEffect, useState, useRef} from 'react'
-import { redirect, useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import Image from 'next/image';
-import AddPatientPage from "./components/PatientInfo";
 import {useEffect, useState} from 'react'
 import { useRouter } from 'next/navigation'; // client redirect
 import Cookies from 'js-cookie';
@@ -12,117 +7,45 @@ import Link from 'next/link';
 
 
 interface PatientItem{
-    id: number;
-    name: string;
-    dob?: string;
+    id: string;
+    patientName: string;
+    dob: string;
+    dateChanged: string;
 }
 
 export default function Home(){
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('')
-    const [selectedItems, setSelectedItems] = useState<number[]>([])
-    const router = useRouter()
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [showModal, setShowModal] = useState(false)
-    const [patients, setPatients] = useState<PatientItem[]>([])
-    const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
-    const patientsRef = useRef<PatientItem[]>([])
-    const[modalData, setModalData] = useState(null);
+    //change this soon itll come from something else
+    const [selectedItems, setSelectedItems] = useState<string[]>([])
+    const patientData: PatientItem[] = [
+        {
+            id: '1',
+            patientName: 'Bessie Young',
+            dob: '9/12/2006',
+            dateChanged: '10/20/2024'
+        },
+        {
+            id: '2',
+            patientName: 'John Smith',
+            dob: '3/15/2005',
+            dateChanged: '10/21/2024'
+        },
+        {
+            id: '3',
+            patientName: 'Sarah Johnson',
+            dob: '7/23/2007',
+            dateChanged: '10/19/2024'
+        },
+        {
+            id: '4',
+            patientName: 'Michael Brown',
+            dob: '1/30/2004',
+            dateChanged: '10/18/2024'
+        }
+    ]
     useEffect(() => {
-        const controller = new AbortController();
-
-        const fetchPatients = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch('/api/analyze/', { signal: controller.signal });
-                if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
-                const data = await response.json();
-                const items: PatientItem[] = data.items ?? [];
-
-                // Only update state if data actually changed to avoid flicker
-                const prev = JSON.stringify(patientsRef.current || []);
-                const next = JSON.stringify(items);
-                if (prev !== next) {
-                    patientsRef.current = items;
-                    setPatients(items);
-                }
-            } catch (error: any) {
-                if (error.name !== 'AbortError') console.error('Failed to fetch patients:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        // initial fetch then poll every 5s
-        fetchPatients();
-        const interval = setInterval(fetchPatients, 1000);
-        return () => {
-            controller.abort();
-            clearInterval(interval);
-        };
-    }, []);
-
-    /*const handleDelete = (id?: string) =>{
-        const target = id ?? deleteTarget
-        if (!target) return
-        setPatients(prev => prev.filter(p => p.id !== target))
-        setDeleteTarget(null)
-    }*/
-    const handleDelete = async(id: number) =>{
-        const target = id ?? deleteTarget
-        if(!target) return
-        //if(!patients.includes(patients.id))
-        try{
-            setIsLoading(true)
-            const response = await fetch(`/api/analyze/`,{
-                method: "DELETE",
-                headers:{
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({id: id})
-            })
-        }catch(error){
-            console.log("Error detected")
-        }finally{
-            setIsLoading(false)
-        }
-    } /* const handleUpdate = async(id: any, name?: any, dob?: any) =>{
-        if(!name && !dob){
-            console.log('please dont do that ')
-        }
-        else{
-            try{
-            setIsLoading(true)
-            const response = await fetch(`/api/analyze${id}`, {
-                method: 'PUT',
-                body:
-            })
-            }catch{
-
-            }finally{
-
-            }
-        }
-        
-    }*/
-    const handleShowModal = (data?: any) =>{
-        if(data){
-            setModalData(data)
-        }
-        else{
-            setModalData(null)
-        }
-        setShowModal(!showModal)
-    }
-    const filteredPatients = patients.filter((p) => {
-        const q = searchQuery.trim().toLowerCase();
-        if (!q) return true; // no filter -> show all
-        return (
-            p.name.toLowerCase().includes(q) ||
-            (p.dob?.toLowerCase().includes(q) ?? false)
-        );
-    });
-    useEffect(() => {
+        //check if the redirect cookie exists
         const hasRedirected = Cookies.get('hasRedirected');
         if (!hasRedirected){
             //set a cookie to indicate that the redirect has happend
@@ -131,34 +54,25 @@ export default function Home(){
         }
     }, [router]);
 
-    /*const toggleItemSelection = (id: string) => {
+    const toggleItemSelection = (id: string) => {
         setSelectedItems(prev =>
-            prev.includes(id) ? prev.filter(itemID => itemID !== id) :
+            prev.includes(id) ? prev.filter(itemID =>itemID !== id) :
             [...prev, id]
         )
-    }*/
-    const realSpill = (id: number) =>
-    {
-        //patientID = id
-        //console.log(typeof id)
-        router.push(`instruction_page?id=${encodeURIComponent(id)}`)
     }
-
-   /* const toggleAllItems = () => {
-        if (selectedItems.length === patients.length){
-            setSelectedItems([])
-        } else {
-            setSelectedItems(patients.map((item: PatientItem) => item.id))
+        const toggleAllItems = () => {
+            if (selectedItems.length === patientData.length){
+                setSelectedItems([])
+            } else {
+                setSelectedItems(patientData.map(item => item.id))
+            }
         }
-    }*/
-        
         const filteredPatients = patientData.filter(patient =>
         patient.patientName.toLowerCase().includes(searchQuery.toLowerCase())
     );
     return (
-        
         <main className="flex flex-col items-center min-h-screen bg-white w-full p-4">
-            <div className="w-[40vw] sm:w-[30vw] md:w-[25vw] max-w-[500px] mb-8">
+            <div className="fixed top-5 left-5 w-[40vw] sm:w-[30vw] md:w-[25vw] max-w-[500px] z-50">
                 <Image
                 className="max-w-full h-auto"
                 src="/image2vector.svg"
@@ -169,10 +83,10 @@ export default function Home(){
                 priority
                 />
             </div>
+
             <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-24 mt-12">
                 {/*header section*/}
                 <div className="flex items-center justify-between mb-6">
-                    {showModal && <AddPatientPage handleShowModal={handleShowModal}/>}
                     <h1 className="text-3xl text-black border-0 focus:outline-none">Patient Profile</h1>
                     {/*search bar */}
                     <div className="flex-1 max-w-md mx-8">
@@ -186,92 +100,13 @@ export default function Home(){
                     </div>
                     {/* add patient button*/}
                     <div className="flex gap-3">
-                        <button onClick={() => handleShowModal()} className="px-6 py-2 bg-black border-0 focus:outline-none text-white rounded hover:bg-black transition-colors">
+                        <button className="px-6 py-2 bg-black border-0 focus:outline-none text-white rounded hover:bg-black transition-colors">
                             Add Patient
                         </button>
                     </div>
                     </div>
 
-                {/*table*/}
                 <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg mt-8">
-                    <table className="w-full table-fixed">
-                        <thead className="sticky top-0 bg-gray-100 border-b border-gray-300 z-10">
-                            <tr>
-                                <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                    Patient Name
-                                </th>
-                                <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                    Date of Birth
-                                </th>
-                                <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="table-container">
-                            {filteredPatients.length > 0 ? (
-                                filteredPatients.map((patient) => (
-                                    <tr 
-                                        key={patient.id}
-                                        className="border-b border-gray-200 hover:transform hover:scale-[1.02] hover:shadow-md hover:z-10 hover:bg-gray-50 hover:relative transition-all duration-200"
-                                        onClick={() => realSpill(patient.id)}
-                                    >
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {patient.name}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            {patient.dob ? new Date(patient.dob).toLocaleDateString() : 'N/A'}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm relative">
-                                            <div className="flex items-center gap-6">
-                                                <button
-                                                    className="text-blue-600 hover:text-blue-800"
-                                                    onClick={(r) => {r.stopPropagation();
-                                                        handleShowModal({id: patient.id, name: patient.name, dob: patient.dob})}}
-                                                >
-                                                    Edit
-                                                </button>
-
-                                                <div className="relative">
-                                                    <button
-                                                        className="text-red-600 hover:text-red-800"
-                                                        onClick={(e) => {
-                                                            // prevent the row click from firing (navigation)
-                                                            e.stopPropagation();
-                                                            if(window.confirm("I WALK SHIT DOWN")){
-                                                                // confirmed: proceed with deletion logic
-                                                                setDeleteTarget(patient.id);
-                                                                console.log("Item deleted")
-                                                            } else {
-                                                                // cancelled: stay on the same page (do nothing)
-                                                                console.log("Deletion canceled")
-                                                            }
-                                                        }}
-                                                    >
-                                                        Delete
-                                                    </button>
-
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={3} className="px-6 py-6 text-center text-sm text-gray-600">
-                                        No results found
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                    
-                </div>
-            </div>
-          
-        </main>
-    )
-}
         <table className="w-full table-fixed">
             <thead className="bg-gray-100 border-b border-gray-300">
                 <tr>
