@@ -400,9 +400,7 @@ def analyze_improvement(before_data, after_data):
                 }
             }
         },
-        'statistics': wilcoxon_results,
-        'before_summary': before_features['summary'], #per video summary
-        'after_summary': after_features['summary']
+        'statistics': wilcoxon_results
     }
 
     return improvement_status
@@ -450,6 +448,6 @@ if __name__ == "__main__":
     
     # Analyze improvement
     improvement_status = analyze_improvement(before_data, after_data)
-
+    
     # Save results
     save_analysis_results(improvement_status, output_path) 
