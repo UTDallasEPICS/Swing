@@ -93,7 +93,10 @@
     background-color 0.2s,
     box-shadow 0.2s;
 }
-
+.table-container{
+  max-height: 300px;
+  overflow-y: auto
+}
 .selectFileButton:hover {
   background-color: #1d4ed8;
 }

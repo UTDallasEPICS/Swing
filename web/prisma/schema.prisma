@@ -1,11 +1,50 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("PRISMA_DB_URL")
+  provider = "sqlite" 
+  url = "file:./dev.db"
+}
+
+
+model Patient {
+  id    Int     @id @default(autoincrement())
+  dob   DateTime? 
+  name  String @default("")
+
+  Results TreatmentResult[] 
+}
+
+model VideoAnalysis {
+  id           Int     @id @default(autoincrement())
+  video                 String
+  graph_data              Json
+  range_of_motion       Float
+  upper_arm_movement    Float
+  forearm_movement      Float
+  smoothness            Float
+  upper_arm_smoothness  Float
+  forearm_smoothness    Float
+
+  ResultBefore TreatmentResult? @relation("BeforeAnalysis")
+  ResultAfter  TreatmentResult? @relation("AfterAnalysis")
+}
+
+model TreatmentResult {
+  id                        Int     @id @default(autoincrement())
+  type_of_treatment                String?
+  percent_change_range_of_motion   Float
+  rom_p_value                       Float
+  percent_change_of_smoothness     Float
+  smoothness_p_value                Float
+
+  patient_id Int?
+  Patient    Patient? @relation(fields: [patient_id], references: [id])
+
+  before_analysis_id Int     @unique 
+  BeforeAnalysis    VideoAnalysis @relation("BeforeAnalysis", fields: [before_analysis_id], references: [id])
+
+  after_analysis_id Int      @unique 
+  AfterAnalysis    VideoAnalysis @relation("AfterAnalysis", fields: [after_analysis_id], references: [id])
 }
