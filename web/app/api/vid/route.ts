@@ -9,8 +9,15 @@ export async function GET(request: Request){
   try{
     const url = new URL(request.url)
     const page = Number(url.searchParams.get('page') ?? 1);
+    const pID = new Number(url.searchParams.get('id'))?.valueOf()
+    const bID = new Number(url.searchParams.get('bID'))?.valueOf()
+    const aID = new Number(url.searchParams.get('aID'))?.valueOf()
+    
     const perPage = Math.min(100, Number(url.searchParams.get('perPage') ?? 25));
     const skip = (Math.max(1, page) - 1) * perPage;
+    if(!pID && !bID && !aID){
+        console.log('ur in vid')
+
     const [items, total] = await Promise.all([
       prisma.treatmentResult.findMany({
           skip,
@@ -19,7 +26,61 @@ export async function GET(request: Request){
       }),
       prisma.treatmentResult.count()
     ]);
-    return NextResponse.json({items, total, page, perPage})
+    return NextResponse.json({items, total, page, perPage})}
+    else if(bID && aID){
+      if(bID === aID)
+      return NextResponse.json({error: 'Before and After ID needs to be different'}, {status: 400})
+      const[before, after] = await Promise.all([
+        prisma.videoAnalysis.findUnique({
+            where: {id: bID}
+        }),
+        prisma.videoAnalysis.findUnique({
+          where: {id: aID}
+        })
+      ]);
+      const mappedBefore = before ? {
+        rom: before.range_of_motion,
+        upperM: before.upper_arm_movement,
+        foreM: before.forearm_movement,
+        smooth: before.smoothness,
+        upperS: before.upper_arm_smoothness,
+        foreS: before.forearm_smoothness
+      } : null;
+      const mappedAfter = after ? {
+        rom: after.range_of_motion,
+        upperM: after.upper_arm_movement,
+        foreM: after.forearm_movement,
+        smooth: after.smoothness,
+        upperS: after.upper_arm_smoothness,
+        foreS: after.forearm_smoothness
+      } : null;
+
+      return NextResponse.json({
+        before: mappedBefore,
+        after: mappedAfter
+      })
+    }
+    else{
+      const[items, total] = await Promise.all([
+        prisma.treatmentResult.findMany({
+          where : {patient_id: pID},
+          skip,
+          take: perPage,
+          orderBy: {id: 'desc'}
+        }),
+        prisma.treatmentResult.count({ where: { patient_id: pID } })
+      ]);
+      // Map field names to match frontend interface
+      const mappedItems = items.map(item => ({
+        id: item.id,
+        type: item.type_of_treatment,
+        rom_change: item.percent_change_range_of_motion,
+        smoothness_change: item.percent_change_of_smoothness,
+        before_id: item.before_analysis_id,
+        after_id: item.after_analysis_id
+      }));
+      return NextResponse.json({items: mappedItems, total, page, perPage })
+    }
   }catch(e){
     console.error(e);
     return NextResponse.json({error: 'Failed to fetch results '}, {status: 500})
@@ -33,6 +94,7 @@ export async function POST(request: Request) {
     const afterVideo = formData.get('afterVideo') as File;
 
     if (!beforeVideo || !afterVideo || !pID) {
+      if(!pID) console.log('you cold asf')
       return NextResponse.json({
         success: false,
         message: 'Both videos and the associated patient are required'
@@ -232,7 +294,7 @@ export async function POST(request: Request) {
       // Create TreatmentResult row linking the two analyses
       await prisma.treatmentResult.create({
         data: {
-          type_of_treatment: null,
+          type_of_treatment: "Botox",
           percent_change_range_of_motion: Number(percentChangeROM),
           rom_p_value: romPValue,
           percent_change_of_smoothness: Number(percentChangeSmooth),

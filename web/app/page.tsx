@@ -4,6 +4,7 @@ import { redirect, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import AddPatientPage from "./components/PatientInfo";
+import Link from 'next/link'
 interface PatientItem{
     id: number;
     name: string;
@@ -119,9 +120,10 @@ export default function Home(){
     }*/
     const realSpill = (id: number) =>
     {
+        console.log(id)
         //patientID = id
         //console.log(typeof id)
-        router.push(`instruction_page?id=${encodeURIComponent(id)}`)
+        router.push(`/instruction_page?id=${encodeURIComponent(id)}`)        
         //router.push({pathname: 'instruction_page', query:{id}})
     }
 
@@ -177,10 +179,10 @@ export default function Home(){
                 </div>
 
                 {/*table*/}
-                <div className="border border-gray-300 rounded-lg overflow-y-auto overflow-x-hidden max-h-[410px] shadow-lg mt-8">
+                <div className="border border-gray-300 rounded-lg overflow-y-auto overflow-x-hidden max-h-[420px] shadow-lg mt-8">
                     <table className="w-full table-fixed">
                         {/*sticky top-0*/}
-                        <thead className=" bg-gray-100 border-b border-gray-300 z-10">
+                        <thead className="sticky top-0 bg-gray-100 border-b border-gray-300 z-10">
                             <tr>
                                 <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
                                     Patient Name
@@ -198,7 +200,7 @@ export default function Home(){
                                 filteredPatients.map((patient) => (
                                     <tr 
                                         key={patient.id}
-                                        className="border-b border-gray-200 hover:transform hover:scale-[1.02] hover:shadow-md hover:z-10 hover:bg-gray-50 hover:relative transition-all duration-200"
+                                        className="border-b border-gray-200 hover:shadow-md hover:bg-gray-50 hover:relative hover:cursor-pointer transition-all duration-200"
                                         onClick={() => realSpill(patient.id)}
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

@@ -24,7 +24,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (email) {
       await handleMagicLogin();

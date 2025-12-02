@@ -4,14 +4,13 @@ import Image from 'next/image'
 import { Upload, Video, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react'
 import { useState, useCallback } from 'react'
 import styles from './video.module.css'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function VideoUpload({params}:
-  {
-    params: {id: number}
-  }
-) {
-  const pID = params.id
+export default function VideoUpload() {
+  const searchParams = useSearchParams()
+  const idParam = searchParams.get('id')
+  const pID = idParam ? Number(idParam) : null
+  console.log(pID)
   const [dragActive, setDragActive] = useState<boolean>(false)
   const [beforeVideo, setBeforeVideo] = useState<File | null>(null)
   const [afterVideo, setAfterVideo] = useState<File | null>(null)

@@ -1,16 +1,21 @@
 //"use client";
 import { useEffect } from 'react';
-import { redirect } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 //import Cookies from 'js-cookie'; 
 import Link from 'next/link';
 
-export default function InstructionPage({params}:
+export default async function InstructionPage({searchParams}:
   {
-    params:{id: number}
+    searchParams: Promise<{ id?: string }>
   }
 )
  {
-  const {id} = params
+  const hp = await searchParams
+  const idParam = hp?.id
+  console.log('searchParams:', searchParams)
+  //const idParam = params.id
+  const id = idParam ? Number(idParam) : null
+  console.log('id:', id)
   /*useEffect(() => {
     //Check if the redirect cookie exists
     const hasRedirected = Cookies.get('hasRedirected');
@@ -50,7 +55,7 @@ export default function InstructionPage({params}:
       {/* Upload Button */}
       <div className ="flex justify-end items-center mt-5 gap-4">
         {/*should be changed to pop up page*/}
-           <Link href="/instruction_page">
+           <Link href={`/patient_history?id=${id}`}>
           <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
             cursor-pointer text-lg font-semibold transition duration-300
             shadow-lg hover:shadow-xl flex items-center gap-2">
@@ -60,7 +65,7 @@ export default function InstructionPage({params}:
             </svg>
           </button>
         </Link>
-           <Link href={{pathname: "/videoUpload", query: {id: id}}}>
+           <Link href={`/videoUpload?id=${encodeURIComponent(String(id))}`}>
           <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
             cursor-pointer text-lg font-semibold transition duration-300
             shadow-lg hover:shadow-xl flex items-center gap-2">
