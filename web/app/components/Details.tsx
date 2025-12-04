@@ -1,113 +1,70 @@
 "use client";
-import React, { useState, useEffect } from "react";
-interface VidAnalysis {
-    rom: number,
-    upperM: number,
-    foreM: number,
-    smooth: number,
-    upperS: number,
-    foreS: number
-}
-interface Details {
-    before: VidAnalysis | null;
-    after: VidAnalysis | null;
-}
-const AddPatientPage = ({ handleShowModal, modalData }: { handleShowModal?: () => void, modalData? :{bID: number, aID: number} | null}) => {
+import React, { useState, useEffect, useRef } from "react";
+import Image from 'next/image'
+const BreakDown = ({ handleShowModal, modalData }: { handleShowModal?: () => void, modalData? :{bID: number, aID: number} | null}) => {
     const {bID, aID} = modalData || {}
-    const [details, setDetails] = useState<Details | null>(null)
+  //  const [beforeDetails, setBDetails] = useState<Details | null>(null)
+  //  const [afterDetails, set]
     const [loading, setLoading] = useState(true)
+    const [imageError, setImageError] = useState<string>('');
 
-
-    /*const [name, setName] = useState(Name || '');
-   // const [lastName, setLastName] = useState("");
-    const [message, setMessage] = useState("");
-    const [dob, setDob] = useState(Dob || null);
-    const[isLoading, setIsLoading] = useState(false)*/
-    
     // Check if form has changed from original modalData
-  
-   
-    useEffect(() =>{
-        fetch('/api/vid')
-        .then(res => res.json())
-        .then(data => {
-            setDetails(data)
-            setLoading(false)
-        })
-    }, [])
-    if(loading) return <div>Loading....</div>
-    if(!details) return <div> Couldn't retrieve IDs</div>
-    // lock body scroll while modal is open so backdrop-blur covers the page and remains consistent
     useEffect(() => {
-        const originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => { document.body.style.overflow = originalOverflow; };
-    }, []);
-    return (
-        <div
-            className="w-full h-full top-0 backdrop-filter backdrop-brightness-75
-            backdrop-blur-md fixed inset-0  bg-black/50 z-40"
-            onClick={() => handleShowModal && handleShowModal()}
-        >
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
+    // If you don't have API calls, set loading to false here
+    setLoading(false);
+    }, [bID, aID]); // Re-run if IDs change
+ 
+    if(loading) return <div>Loading....</div>
+    // lock body scroll while modal is open so backdrop-blur covers the page and remains consistent
+   // Helper function to stop click propagation (should be defined outside return)
+
+
+return (
+    <div
+        className="w-full h-full top-0 backdrop-filter backdrop-brightness-75 backdrop-blur-md fixed inset-0 bg-black/50 z-40"
+        onClick={() => handleShowModal && handleShowModal()}
+    >
+        {imageError && (
+  <div className="text-red-500 mb-4">{imageError}</div>
+)}
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div
-                className="bg-white rounded-lg shadow-xl w-[320px] sm:w-[420px] p-8"
                 onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-lg shadow-xl p-8 
+                           w-full max-w-xl max-h-[90vh] overflow-y-auto flex justify-between" 
             >
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 text-center">
+                <h1 className="text-1xl sm:text-1xl md:text-2xl font-bold text-gray-800 mb-6 text-center">
                     Breakdown
                 </h1>
-                {
-                    /*if(name === Name*/
-                }
-                <div className="mt-8 bg-white rounded-lg shadow p-6">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th className="w-[200px]"></th>
-                                <th>Before</th>
-                                <th>After</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Upper Arm Movement</td>
-                                <td>{details.before?.upperM || 'n/a'}</td>
-                                <td>{details.after?.upperM || 'n/a'}</td>
-                            </tr>
-                            <tr>
-                                <td>Fore Arm Movement</td>
-                                <td>{details.before?.foreM || 'n/a'}</td>
-                                <td>{details.after?.foreM || 'n/a'}</td>
-                            </tr>
-                            <tr>
-                                <td>Upper Arm Smoothness</td>
-                                <td>{details.before?.upperS || 'n/a'}</td>
-                                <td>{details.after?.upperS || 'n/a'}</td>
-                            </tr>
-                            <tr>
-                                <td>Fore Arm Smoothness</td>
-                                <td>{details.before?.foreS || 'n/a'}</td>
-                                <td>{details.after?.foreS || 'n/a'}</td>
-                            </tr>
-                            <tr>
-                                <td>Range of Motion</td>
-                                <td>{details.before?.rom || 'n/a'}</td>
-                                <td>{details.after?.rom || 'n/a'}</td>
-                            </tr>
-                            <tr>
-                                <td>Overall Smoothness</td>
-                                <td>{details.before?.smooth || 'n/a'}</td>
-                                <td>{details.after?.smooth || 'n/a'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                
+                <div className="relative w-full h-[400px]">
+                     <Image
+                              src={`/api/vid/?bID=${encodeURIComponent(String(bID))}`}
+                              alt="Before Treatment Analysis"
+                              fill
+                              className="object-contain"
+                              unoptimized
+                             onError={() => setImageError('Failed to load analysis images. Please try uploading the videos again.')}
+                            />
+
                 </div>
                 
-            </div>
+                <div className="relative w-full h-[400px]">
+                     <Image
+                              src={`/api/vid/?bID=${encodeURIComponent(String(aID))}`}
+                              alt="After Treatment Analysis"
+                              fill
+                              className="object-contain"
+                              unoptimized
+                              onError={() => setImageError('Failed to load analysis images. Please try uploading the videos again.')}
+                            />
+
+                </div>
+                
+                {/* Optional: Add a Close button here for better UX */}
+                
             </div>
         </div>
-    );
-};
-
-export default AddPatientPage;
+    </div>
+);}
+export default BreakDown;

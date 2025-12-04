@@ -83,7 +83,7 @@ export default function Home(){
         }
     } 
     const handleShowModal = (data?: PatientItem) =>{
-        
+       // console.log('like a rockstar')
         if(data){
            setModalData(data)
         }else{
@@ -225,7 +225,7 @@ export default function Home(){
                                                         onClick={(e) => {
                                                             // prevent the row click from firing (navigation)
                                                             e.stopPropagation();
-                                                            if(window.confirm("I WALK SHIT DOWN")){
+                                                            if(window.confirm("Confirm Deletion")){
                                                                 // confirmed: proceed with deletion logic
                                                                 setDeleteTarget(patient.id);
                                                                 console.log("Item deleted")

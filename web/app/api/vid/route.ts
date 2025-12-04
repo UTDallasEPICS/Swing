@@ -11,11 +11,10 @@ export async function GET(request: Request){
     const page = Number(url.searchParams.get('page') ?? 1);
     const pID = new Number(url.searchParams.get('id'))?.valueOf()
     const bID = new Number(url.searchParams.get('bID'))?.valueOf()
-    const aID = new Number(url.searchParams.get('aID'))?.valueOf()
     
     const perPage = Math.min(100, Number(url.searchParams.get('perPage') ?? 25));
     const skip = (Math.max(1, page) - 1) * perPage;
-    if(!pID && !bID && !aID){
+    if(!pID && !bID){
         console.log('ur in vid')
 
     const [items, total] = await Promise.all([
@@ -27,38 +26,34 @@ export async function GET(request: Request){
       prisma.treatmentResult.count()
     ]);
     return NextResponse.json({items, total, page, perPage})}
-    else if(bID && aID){
-      if(bID === aID)
-      return NextResponse.json({error: 'Before and After ID needs to be different'}, {status: 400})
-      const[before, after] = await Promise.all([
-        prisma.videoAnalysis.findUnique({
-            where: {id: bID}
-        }),
-        prisma.videoAnalysis.findUnique({
-          where: {id: aID}
-        })
-      ]);
-      const mappedBefore = before ? {
-        rom: before.range_of_motion,
-        upperM: before.upper_arm_movement,
-        foreM: before.forearm_movement,
-        smooth: before.smoothness,
-        upperS: before.upper_arm_smoothness,
-        foreS: before.forearm_smoothness
-      } : null;
-      const mappedAfter = after ? {
-        rom: after.range_of_motion,
-        upperM: after.upper_arm_movement,
-        foreM: after.forearm_movement,
-        smooth: after.smoothness,
-        upperS: after.upper_arm_smoothness,
-        foreS: after.forearm_smoothness
-      } : null;
-
-      return NextResponse.json({
-        before: mappedBefore,
-        after: mappedAfter
+    else if(bID){
+      if(isNaN(bID))
+        return NextResponse.json({error: 'Invalid analysis IDs'}, {status: 400})
+      const before = await prisma.videoAnalysis.findUnique({
+        where: {id: bID},
+        select: {
+          graph_data: true
+        }
       })
+      
+      if(!before) return NextResponse.json({error: 'No Analysis found'}, {status: 404})
+      
+      const bGraphData = before.graph_data as any
+
+      const base64Image = bGraphData.image
+
+      if(!base64Image)
+        return NextResponse.json({
+          error: 'No image data found in analysis'
+      }, {status: 404})
+
+      const buffer = Buffer.from(base64Image, 'base64')
+      return new Response(buffer,{
+        headers: {
+          'Content-Type': 'image/jpeg',
+          'Cache-Control': 'public, max-age=31536000'
+        
+      }})
     }
     else{
       const[items, total] = await Promise.all([
@@ -245,6 +240,14 @@ export async function POST(request: Request) {
       const beforePose = JSON.parse(fs.readFileSync(beforeJson, 'utf-8'));
       const afterPose = JSON.parse(fs.readFileSync(afterJson, 'utf-8'));
       const improvement = JSON.parse(fs.readFileSync(improvementOutput, 'utf-8'));
+      
+      const beforeImageBuffer = fs.readFileSync(beforeOutput)
+      const afterImageBuffer = fs.readFileSync(afterOutput)
+      const beforeImageBase64 = beforeImageBuffer.toString('base64')
+      const afterImageBase64 = afterImageBuffer.toString('base64')
+
+      beforePose.image = beforeImageBase64
+      afterPose.image = afterImageBase64
 
       // Prefer summaries emitted by analyze_improvement.py; fall back to minimal defaults
       const beforeSummary = improvement.before_summary ?? { ranges: { UpperArm: 0, Forearm: 0 }, smoothness: { UpperArm: 0, Forearm: 0 } };

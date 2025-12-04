@@ -1,6 +1,7 @@
 "use client"
 import {useState, useEffect, useRef} from 'react'
 import { useSearchParams } from 'next/navigation'
+import BreakDown from "../components/Details"
 interface Result{
     id: number,
     type: string,
@@ -9,18 +10,30 @@ interface Result{
     before_id: number,
     after_id: number
 }
+interface IDS{
+    aID: number
+    bID: number
+}
 export default function History(){
     const searchParams = useSearchParams()
+    const [modalData, setModalData] = useState<IDS | null>(null)
     const idParam = searchParams.get('id')
     const pID = idParam ? Number(idParam) : null
     const [results, setResults] = useState<Result[]>([])
     const [showModal, setShowModal] = useState(false)
    // console.log('history id: ', pID)
-   /* const handleShowModal = (bID?: number, aID?: number) =>{
-        if(bID && aID){
-            setModalData()
+   const handleShowModal = (beforeID?: number, afterID?: number) =>{
+      //  console.log(beforeID, afterID)
+        if(beforeID && afterID){
+            const data: IDS ={
+                bID: beforeID,
+                aID: afterID
+            }
+            setModalData(data)
         }
-    }*/
+        setShowModal(!showModal)
+
+    }
     //const [dialogOpen, setDialogOpen] = useState(false);
     //const dialogRef = useRef<HTMLDialogElement>(null);
     const resRef = useRef<Result[]>([])
@@ -67,6 +80,12 @@ const closeDialog = () => dialogRef.current?.close();*/
                
                {/*table*/}
                <div className="border border-gray-300 rounded-lg shadow-lg mt-8">
+                 {showModal && <BreakDown  handleShowModal={handleShowModal}
+                      modalData={modalData?{
+                        bID: modalData.bID,
+                        aID: modalData.aID,
+                      }: null}
+                    />}
                    <table className="w-full table-fixed">
                        <thead className="sticky top-0 bg-gray-100 border-b border-gray-300 z-10">
                            <tr>
@@ -104,8 +123,8 @@ const closeDialog = () => dialogRef.current?.close();*/
                                                <button
                                                    className="text-blue-600 hover:text-blue-800"
                                                    onClick={() => {
-                                                       // Add your action here
-                                                       console.log('View details for result:', result.id);
+                                                       handleShowModal(Number(result.before_id), Number(result.after_id))
+                                                       //console.log('View details for result:', result.id);
                                                    }}
                                                >
                                                    View
