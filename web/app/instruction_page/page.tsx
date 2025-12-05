@@ -12,10 +12,10 @@ export default async function InstructionPage({searchParams}:
  {
   const hp = await searchParams
   const idParam = hp?.id
-  console.log('searchParams:', searchParams)
+  //console.log('searchParams:', searchParams)
   //const idParam = params.id
   const id = idParam ? Number(idParam) : null
-  console.log('id:', id)
+  //console.log('id:', id)
   /*useEffect(() => {
     //Check if the redirect cookie exists
     const hasRedirected = Cookies.get('hasRedirected');

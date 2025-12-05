@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@prisma/client": "^6.18.0",
     "js-cookie": "^3.0.5"
   },

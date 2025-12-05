@@ -72,11 +72,11 @@ export async function DELETE(request: Request) {
 }
 export async function POST(request: Request){
     try{
-      const {name, dob, Results} = await request.json()
+      const {name, dob} = await request.json()
 
-      if(!name || !dob){
+      if(!name){
         return NextResponse.json({
-          error: 'Missing name or date of birth'
+          error: 'Missing name'
         }, {status: 400})
         
       }
@@ -84,7 +84,7 @@ export async function POST(request: Request){
       const newPatient = await prisma.patient.create({
         data: {
           name: name,
-          dob: new Date(dob),
+          dob: dob ? new Date(dob) : null,
           // Results will be created separately if needed
         },
       });

@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Upload, Video, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react'
 import { useState, useCallback, useRef } from 'react'
 import styles from './video.module.css'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
 
@@ -13,6 +13,8 @@ let ffmpegInstance: FFmpeg | null = null
 let ffmpegLoaded = false
 
 export default function VideoUpload() {
+  const searchParams = useSearchParams()
+  const id = searchParams.get('id')
   const [dragActive, setDragActive] = useState<boolean>(false)
   const [beforeVideo, setBeforeVideo] = useState<File | null>(null)
   const [afterVideo, setAfterVideo] = useState<File | null>(null)
@@ -93,7 +95,8 @@ export default function VideoUpload() {
 
       // Read output
       const data = await ffmpeg.readFile('output.mp4')
-      const blob = new Blob([data.buffer], { type: 'video/mp4' })
+      const dataBuffer = (data as Uint8Array).buffer as ArrayBuffer
+      const blob = new Blob([dataBuffer], { type: 'video/mp4' })
       
       // Convert blob back to File
       const downsizedFile = new File([blob], file.name, { type: 'video/mp4' })
@@ -211,11 +214,12 @@ export default function VideoUpload() {
     setError(null)
 
     const formData = new FormData()
+    formData.append('id', String(id))
     formData.append('beforeVideo', beforeVideo)
     formData.append('afterVideo', afterVideo)
 
     try {
-      const response = await fetch('/api/vid', {
+      const response = await fetch('/api/vid/', {
         method: 'POST',
         body: formData,
       })
