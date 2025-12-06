@@ -63,6 +63,7 @@ interface ImprovementStatus {
 
 export default function Results() {
   const searchParams = useSearchParams()
+  const id = searchParams.get('id')
   const [results, setResults] = useState<AnalysisResults | null>(null)
   const [improvementStatus, setImprovementStatus] = useState<ImprovementStatus | null>(null)
   const [loading, setLoading] = useState(true)

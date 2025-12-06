@@ -36,6 +36,7 @@ return (
                 </h2>
                 <div className="flex">
                 <div className="relative w-full h-[350px]">
+                    <h3 className="text-base font-normal text-gray-500 mb-4">Before</h3>
                      <Image
                               src={`/api/vid/?bID=${encodeURIComponent(String(bID))}`}
                               alt="Before Treatment Analysis"
@@ -48,6 +49,7 @@ return (
                 </div>
                 
                 <div className="relative w-full h-[350px]">
+                    <h3 className="text-base font-normal text-gray-500 mb-4">After</h3>
                      <Image
                               src={`/api/vid/?bID=${encodeURIComponent(String(aID))}`}
                               alt="After Treatment Analysis"

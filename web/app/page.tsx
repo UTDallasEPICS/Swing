@@ -11,7 +11,6 @@ interface PatientItem{
     dob?: string;
 }
 
-
 export default function Home(){
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedItems, setSelectedItems] = useState<number[]>([])

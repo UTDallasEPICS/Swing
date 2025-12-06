@@ -7,7 +7,7 @@ import fs from 'fs';
 import { writeFile } from 'fs/promises';
 //get handler
 export async function GET(request: Request) {
-  console.log("your in analyze")
+  //console.log("your in analyze")
   try {
     //create url object, allows to extract query params
     const url = new URL(request.url);

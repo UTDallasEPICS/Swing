@@ -10,7 +10,7 @@ const quicksand = Quicksand({
 });
 
 export const metadata: Metadata = {
-  title: 'Login Page',
+  title: 'Swing',
   description: 'Magic Link Login',
   icons: {
     icon: "/favicon.ico", // must be in /public
