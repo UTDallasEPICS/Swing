@@ -26,10 +26,22 @@ This project aims to develop an AI-powered web application to assist in tracking
 - Secure authentication through hospital's system
 - Restricted access for authorized personnel only
 
-### Homepage
+###  Homepage
+
+- Interactive table tracking all the patients with video upload
+- Clickable table cells that take you to instruction page
+- Ability to add patients or edit name and/or dob 
+- Ability to delete
+
+### Instruction Page
 
 - Simple interface
-- Button to navigate to video upload page
+- Button to navigate to video upload and patient history page
+
+### Patient History Page
+
+- All previous video comparison results customized for each patient
+- View button to view the more information
 
 ### Video Upload Page
 
@@ -68,9 +80,13 @@ This project aims to develop an AI-powered web application to assist in tracking
 - Queuing: SQS
 - Compute: Lambda Functions
 
+### Database
+
+- Database Language: SQLite
+
 ### Migration Scripts
 
-- No existing data migration required at this stage
+- Initial schema was created no need for migration scripts
 
 ## Development Environment Setup
 ### Prerequisites
@@ -82,12 +98,13 @@ This project aims to develop an AI-powered web application to assist in tracking
 
 ### Database Initialization
 
-- No local database setup required (no database implemented yet)
+- cd web
+- npx prisma generate
 
 ### Authentication Setup
 
 - Coordinate with hospital IT for authentication integration
-- Implement Auth0 or similar service in future iterations
+- Implement BetterAuth in future iterations
 
 ## Starting Project
 ### Running Front-End
