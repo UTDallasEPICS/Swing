@@ -33,13 +33,14 @@ model VideoAnalysis {
 
 model TreatmentResult {
   id                        Int     @id @default(autoincrement())
+  createdAt                 DateTime        @default(now())
   type_of_treatment                String?
   percent_change_range_of_motion   Float
   rom_p_value                       Float
   percent_change_of_smoothness     Float
   smoothness_p_value                Float
 
-  patient_id Int?
+  patient_id Int
   Patient    Patient? @relation(fields: [patient_id], references: [id])
 
   before_analysis_id Int     @unique 

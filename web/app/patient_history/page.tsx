@@ -4,6 +4,9 @@ import { useSearchParams } from 'next/navigation'
 import BreakDown from "../components/Details"
 interface Result{
     id: number,
+    createDate: Date
+    rom_pval: number,
+    smooth_pval: number,
     type: string,
     rom_change: number,
     smoothness_change: number,
@@ -89,16 +92,22 @@ const closeDialog = () => dialogRef.current?.close();*/
                    <table className="w-full table-fixed">
                        <thead className="sticky top-0 bg-gray-100 border-b border-gray-300 z-10">
                            <tr>
-                               <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
-                                   Type
+                               <th className="px-4 py-3 text-left font-semibold text-sm text-gray-700">
+                                   Date
                                </th>
-                               <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                               <th className="px-4 py-3 text-left font-semibold text-sm text-gray-700">
                                    ROM Change
                                </th>
-                               <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                               <th className="px-4 py-3 text-left font-semibold text-sm text-gray-700">
+                                   ROM P Value
+                               </th>
+                               <th className="px-4 py-3 text-left font-semibold text-sm text-gray-700">
                                    Smoothness Change
                                </th>
-                               <th className="px-6 py-3 text-left font-semibold text-sm text-gray-700">
+                               <th className="px-4 py-3 text-left font-semibold text-sm text-gray-700">
+                                   Smoothness P Value
+                               </th>
+                               <th className="px-4 py-3 text-left font-semibold text-sm text-gray-700">
                                </th>
                            </tr>
                        </thead>
@@ -110,13 +119,19 @@ const closeDialog = () => dialogRef.current?.close();*/
                                        className="border-b border-gray-200 hover:bg-gray-50 hover:relative transition-all duration-200"
                                    >
                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                           {result.type || 'N/A'}
+                                           {new Date(result.createDate).toLocaleDateString() || 'N/A'}
                                        </td>
                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                            {result.rom_change ? result.rom_change.toFixed(2) : '0.00'}%
                                        </td>
+                                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                           {result.rom_pval ? result.rom_pval.toFixed(2) : '0.00'}
+                                       </td>
                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                            {result.smoothness_change ? result.smoothness_change.toFixed(2) : '0.00'}%
+                                       </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                           {result.smooth_pval ? result.smooth_pval.toFixed(2) : '0.00'}
                                        </td>
                                        <td className="px-6 py-4 whitespace-nowrap text-sm relative">
                                            <div className="flex items-center gap-6">

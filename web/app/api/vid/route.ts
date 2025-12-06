@@ -68,7 +68,10 @@ export async function GET(request: Request){
       // Map field names to match frontend interface
       const mappedItems = items.map(item => ({
         id: item.id,
+        createDate: item.createdAt,
         type: item.type_of_treatment,
+        rom_pval: item.rom_p_value,
+        smooth_pval: item.smoothness_p_value,
         rom_change: item.percent_change_range_of_motion,
         smoothness_change: item.percent_change_of_smoothness,
         before_id: item.before_analysis_id,
