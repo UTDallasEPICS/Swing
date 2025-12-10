@@ -2,6 +2,7 @@
 import {useState, useEffect, useRef} from 'react'
 import { useSearchParams } from 'next/navigation'
 import BreakDown from "../components/Details"
+import HomeButton from "../components/HomeButton"
 interface Result{
     id: number,
     createDate: Date
@@ -76,7 +77,10 @@ const closeDialog = () => dialogRef.current?.close();*/
 
   
     return (
-       <main className="flex flex-col items-center min-h-screen bg-white w-full p-4">
+       <main className="relative flex flex-col items-center min-h-screen bg-white w-full p-4">
+             <div className="absolute top-8 left-7">
+                <HomeButton />
+              </div>
        <div className="flex flex-col items-center min-h-screen bg-white w-full p-4">
            <div className="w-[95%] max-w-[1600px] mx-auto px-8 py-8">
                <h1 className="text-3xl text-black border-0 focus:outline-none mb-6">Treatment Results History</h1>

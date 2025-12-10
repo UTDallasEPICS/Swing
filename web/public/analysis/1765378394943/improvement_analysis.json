@@ -1,0 +1,70 @@
+{
+  "overall_score": 1.7197939194631724,
+  "improved": true,
+  "criteria": {
+    "range_of_motion": true,
+    "smoothness": true
+  },
+  "details": {
+    "range_of_motion": {
+      "score": 1.2314226574669567,
+      "details": {
+        "upper_arm": 1.0770012965097857,
+        "forearm": 1.4177221032420058
+      }
+    },
+    "smoothness": {
+      "score": 2.208165181459388,
+      "details": {
+        "upper_arm": 2.108853712639709,
+        "forearm": 2.2961653172185237
+      }
+    }
+  },
+  "statistics": {
+    "range_of_motion": {
+      "upper_arm": {
+        "statistic": 1670.0,
+        "p_value": 3.0485146033220842e-18,
+        "significant": true
+      },
+      "forearm": {
+        "statistic": 6205.0,
+        "p_value": 0.09828284205027013,
+        "significant": false
+      }
+    },
+    "smoothness": {
+      "upper_arm": {
+        "statistic": 7096.0,
+        "p_value": 0.6052083424953869,
+        "significant": false
+      },
+      "forearm": {
+        "statistic": 7210.0,
+        "p_value": 0.5356455017538349,
+        "significant": false
+      }
+    }
+  },
+  "before_summary": {
+    "ranges": {
+      "UpperArm": 0.2651769866545995,
+      "Forearm": 0.2198020021120707
+    },
+    "smoothness": {
+      "UpperArm": -10.249740027289032,
+      "Forearm": -11.567217804254978
+    }
+  },
+  "after_summary": {
+    "ranges": {
+      "UpperArm": 0.28559595843156177,
+      "Forearm": 0.3116181567311287
+    },
+    "smoothness": {
+      "UpperArm": -21.615202310140305,
+      "Forearm": -26.56024433884289
+    }
+  }
+}

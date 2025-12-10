@@ -1,6 +1,7 @@
 //"use client";
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import HomeButton from "../components/HomeButton"
 //import Cookies from 'js-cookie'; 
 import Link from 'next/link';
 
@@ -29,7 +30,12 @@ export default async function InstructionPage({searchParams}:
 
   //Responsive size added to adjust for mobile/tablet
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+    <main className="relative flex flex-col items-center justify-center min-h-screen bg-white p-4">
+      {/* Home Button */}
+      <div className="absolute top-10 left-10">
+        <HomeButton />
+      </div>
+
       {/* Header Section */}
       <div className="text-black flex flex-col items-center text-center pt-20 pb-12">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -53,9 +59,9 @@ export default async function InstructionPage({searchParams}:
       </div>
 
       {/* Upload Button */}
-      <div className ="flex justify-end items-center mt-5 gap-4">
+      <div className="flex justify-end items-center mt-5 gap-4">
         {/*should be changed to pop up page*/}
-           <Link href={`/patient_history?id=${id}`}>
+        <Link href={`/patient_history?id=${id}`}>
           <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
             cursor-pointer text-lg font-semibold transition duration-300
             shadow-lg hover:shadow-xl flex items-center gap-2">
@@ -65,7 +71,7 @@ export default async function InstructionPage({searchParams}:
             </svg>
           </button>
         </Link>
-           <Link href={`/videoUpload?id=${encodeURIComponent(String(id))}`}>
+        <Link href={`/videoUpload?id=${encodeURIComponent(String(id))}`}>
           <button className="px-8 py-4 bg-black hover:bg-gray-200 text-white rounded-lg 
             cursor-pointer text-lg font-semibold transition duration-300
             shadow-lg hover:shadow-xl flex items-center gap-2">
@@ -75,7 +81,7 @@ export default async function InstructionPage({searchParams}:
             </svg>
           </button>
         </Link>
-  </div>
+      </div>
     </main>
   );
 }

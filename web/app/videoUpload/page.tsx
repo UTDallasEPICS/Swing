@@ -7,6 +7,7 @@ import styles from './video.module.css'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
+import HomeButton from "../components/HomeButton"
 
 // Create FFmpeg instance at module level so it persists across renders
 let ffmpegInstance: FFmpeg | null = null
@@ -231,7 +232,7 @@ export default function VideoUpload() {
       }
 
       // Redirect to results page with all analysis URLs
-      router.push(`/results?before=${result.beforeResult}&after=${result.afterResult}&improvement=${result.improvementResult}`)
+      router.push(`/results?before=${result.beforeResult}&after=${result.afterResult}&improvement=${result.improvementResult}&id=${encodeURIComponent(String(id))}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       setIsProcessing(false)
@@ -239,7 +240,10 @@ export default function VideoUpload() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-8 bg-white">
+    <main className="relative flex flex-col items-center justify-center min-h-screen p-8 bg-white">
+           <div className="absolute top-10 left-10">
+              <HomeButton />
+            </div>
       <div className="max-w-4xl w-full">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Upload Patient Videos</h1>
         
